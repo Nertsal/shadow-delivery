@@ -1,9 +1,14 @@
 use crate::{
-    model::{Level, World},
+    model::{Coord, Level, PlayerControl, Time, World},
     render::{GameRender, RenderCache},
 };
 
 use super::*;
+
+const KEYS_ACC: [geng::Key; 2] = [geng::Key::W, geng::Key::Up];
+const KEYS_DEC: [geng::Key; 2] = [geng::Key::S, geng::Key::Down];
+const KEYS_LEFT: [geng::Key; 2] = [geng::Key::A, geng::Key::Left];
+const KEYS_RIGHT: [geng::Key; 2] = [geng::Key::D, geng::Key::Right];
 
 pub struct Game {
     geng: Geng,
@@ -26,6 +31,28 @@ impl Game {
             draw_hitboxes: cfg!(debug_assertions),
         }
     }
+
+    fn get_player_control(&mut self) -> PlayerControl {
+        let mut control = PlayerControl {
+            accelerate: Coord::ZERO,
+            turn: Coord::ZERO,
+        };
+        let window = self.geng.window();
+        let pressed = |keys: &[geng::Key]| keys.iter().any(|key| window.is_key_pressed(*key));
+        if pressed(&KEYS_ACC) {
+            control.accelerate += Coord::ONE;
+        }
+        if pressed(&KEYS_DEC) {
+            control.accelerate -= Coord::ONE;
+        }
+        if pressed(&KEYS_LEFT) {
+            control.turn += Coord::ONE;
+        }
+        if pressed(&KEYS_RIGHT) {
+            control.turn -= Coord::ONE;
+        }
+        control
+    }
 }
 
 impl geng::State for Game {
@@ -43,5 +70,11 @@ impl geng::State for Game {
         if let geng::Event::KeyDown { key: geng::Key::F2 } = event {
             self.draw_hitboxes = !self.draw_hitboxes;
         }
+    }
+
+    fn update(&mut self, delta_time: f64) {
+        let delta_time = Time::new(delta_time as f32);
+        let player_control = self.get_player_control();
+        self.world.update(player_control, delta_time);
     }
 }

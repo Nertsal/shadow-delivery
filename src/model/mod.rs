@@ -3,14 +3,16 @@ use super::*;
 mod collider;
 mod level;
 mod lights;
+mod logic;
 
 pub use collider::*;
 pub use level::*;
 pub use lights::*;
 
-const PLAYER_SIZE: vec2<f32> = vec2(0.2, 0.6);
+const PLAYER_SIZE: vec2<f32> = vec2(0.6, 0.2);
 
 pub type Coord = R32;
+pub type Time = R32;
 
 pub struct World {
     pub player: Player,
@@ -28,6 +30,13 @@ pub struct Obstacle {
 
 pub struct Player {
     pub collider: Collider,
+    pub rotation: Coord,
+    pub speed: Coord,
+}
+
+pub struct PlayerControl {
+    pub accelerate: Coord,
+    pub turn: Coord,
 }
 
 impl World {
@@ -40,6 +49,8 @@ impl World {
         Self {
             player: Player {
                 collider: Collider::new(Aabb2::ZERO.extend_symmetric(PLAYER_SIZE.map(Coord::new))),
+                rotation: Coord::ZERO,
+                speed: Coord::ZERO,
             },
             obstacles,
             camera: Camera2d {
