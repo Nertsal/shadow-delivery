@@ -7,6 +7,7 @@ pub struct Assets {
 
 #[derive(geng::Load)]
 pub struct Shaders {
+    pub color: ugli::Program,
     // pub texture: ugli::Program,
     // pub texture_mask: ugli::Program,
     pub global_light: ugli::Program,

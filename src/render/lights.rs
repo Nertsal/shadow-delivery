@@ -33,14 +33,19 @@ impl LightsRender {
 
     pub fn start_render(
         &mut self,
+        background_color: Rgba<f32>,
         framebuffer: &mut ugli::Framebuffer,
     ) -> (ugli::Framebuffer, ugli::Framebuffer) {
         self.buffers.update(framebuffer.size(), &self.geng);
 
+        // Clear the postprocess
+        let mut post_framebuffer =
+            attach_texture(&mut self.buffers.postprocess_texture, &self.geng);
+        ugli::clear(&mut post_framebuffer, Some(background_color), None, Some(0));
+
         let mut world_framebuffer = attach_texture(&mut self.buffers.world_texture, &self.geng);
         let mut normal_framebuffer = attach_texture(&mut self.buffers.normal_texture, &self.geng);
-        let color = Rgba::try_from("#341a22").unwrap();
-        ugli::clear(&mut world_framebuffer, Some(color), None, None);
+        ugli::clear(&mut world_framebuffer, Some(background_color), None, None);
         ugli::clear(
             &mut normal_framebuffer,
             Some(Rgba::TRANSPARENT_BLACK),
@@ -51,19 +56,7 @@ impl LightsRender {
         (world_framebuffer, normal_framebuffer)
     }
 
-    pub fn finish_render(
-        &mut self,
-        world: &World,
-        cache: &RenderCache,
-        camera: &Camera2d,
-        framebuffer: &mut ugli::Framebuffer,
-    ) {
-        // Render normal map
-        // self.render_normal_map(camera, &cache.normal_geometry);
-
-        // Render lights
-        self.render_lights(world, camera, &cache.light_geometry);
-
+    pub fn finish(&mut self, framebuffer: &mut ugli::Framebuffer) {
         // Draw the texture to the screen
         self.geng.draw2d().draw2d(
             framebuffer,
@@ -83,17 +76,14 @@ impl LightsRender {
         geometry: &ugli::VertexBuffer<NormalVertex>,
     ) {
         self.render_global_light(world);
-        self.render_spotlights(world, camera, geometry);
+        self.render_spotlights(world, true, camera, geometry);
     }
 
     /// Renders the world for the global light onto the postprocessing texture.
-    /// Should be called as the first light render as it clears the texture.
     pub fn render_global_light(&mut self, world: &World) {
         let mut world_framebuffer =
             attach_texture(&mut self.buffers.postprocess_texture, &self.geng);
         let framebuffer_size = world_framebuffer.size();
-        // Clear the framebuffer assuming the global light is rendered first.
-        ugli::clear(&mut world_framebuffer, Some(Rgba::BLACK), None, Some(0));
 
         ugli::draw(
             &mut world_framebuffer,
@@ -120,6 +110,7 @@ impl LightsRender {
     pub fn render_spotlights(
         &mut self,
         world: &World,
+        volumetric: bool,
         camera: &Camera2d,
         geometry: &ugli::VertexBuffer<NormalVertex>,
     ) {
@@ -199,7 +190,7 @@ impl LightsRender {
                         u_light_intensity: spotlight.intensity,
                         u_light_max_distance: spotlight.max_distance.as_f32(),
                         u_light_distance_gradient: spotlight.distance_gradient,
-                        u_light_volume: spotlight.volume,
+                        u_light_volume: if volumetric { spotlight.volume } else { 0.0 },
                         u_normal_texture: &self.buffers.normal_texture,
                         u_source_texture: &self.buffers.world_texture,
                         u_framebuffer_size: self.buffers.normal_texture.size(),

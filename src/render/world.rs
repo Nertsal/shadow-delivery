@@ -27,39 +27,21 @@ impl WorldRender {
             collider: &'a Collider,
         }
         for obstacle in query_obstacle_ref!(world.obstacles).values() {
-            self.draw_collider(
+            draw_collider(
                 obstacle.collider,
                 Rgba::new(0.3, 0.3, 0.3, 0.5),
-                &world.camera,
+                &self.geng,
                 framebuffer,
+                &world.camera,
             );
         }
 
-        self.draw_collider(
+        draw_collider(
             &world.player.collider,
             Rgba::new(0.0, 1.0, 0.0, 0.5),
+            &self.geng,
+            framebuffer,
             &world.camera,
-            framebuffer,
-        );
-    }
-
-    pub fn draw_collider(
-        &self,
-        collider: &Collider,
-        color: Rgba<f32>,
-        camera: &Camera2d,
-        framebuffer: &mut ugli::Framebuffer,
-    ) {
-        let rotation = collider.rotation.as_f32();
-        let collider = collider.raw().map(Coord::as_f32);
-        let center = collider.center();
-        self.geng.draw2d().draw2d(
-            framebuffer,
-            camera,
-            &draw2d::Quad::new(collider, color)
-                .translate(-center)
-                .rotate(rotation)
-                .translate(center),
         );
     }
 }

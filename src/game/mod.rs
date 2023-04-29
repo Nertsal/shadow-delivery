@@ -15,8 +15,10 @@ pub struct Game {
     assets: Rc<Assets>,
     render: GameRender,
     render_cache: RenderCache,
+    framebuffer_size: vec2<usize>,
     world: World,
     draw_hitboxes: bool,
+    player_visibilty: f32,
 }
 
 impl Game {
@@ -27,8 +29,10 @@ impl Game {
             assets: assets.clone(),
             render: GameRender::new(geng, assets),
             render_cache: RenderCache::calculate(&world, geng, assets),
+            framebuffer_size: vec2(1, 1),
             world,
             draw_hitboxes: cfg!(debug_assertions),
+            player_visibilty: 0.0,
         }
     }
 
@@ -57,8 +61,9 @@ impl Game {
 
 impl geng::State for Game {
     fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
+        self.framebuffer_size = framebuffer.size();
         ugli::clear(framebuffer, Some(Rgba::BLACK), None, None);
-        self.render.draw(
+        self.player_visibilty = self.render.draw(
             &self.world,
             self.draw_hitboxes,
             &self.render_cache,
@@ -76,5 +81,24 @@ impl geng::State for Game {
         let delta_time = Time::new(delta_time as f32);
         let player_control = self.get_player_control();
         self.world.update(player_control, delta_time);
+    }
+
+    fn ui<'a>(&'a mut self, cx: &'a geng::ui::Controller) -> Box<dyn geng::ui::Widget + 'a> {
+        use geng::ui::*;
+
+        let framebuffer_size = self.framebuffer_size.map(|x| x as f32);
+
+        let visibility = geng::ui::Text::new(
+            format!("Visibility: {:.0}%", self.player_visibilty * 100.0),
+            self.geng.default_font(),
+            30.0,
+            Rgba::WHITE,
+        )
+        .align(vec2(0.5, 0.9))
+        .fixed_size(framebuffer_size.map(|x| x.into()) * 0.1)
+        .align(vec2(0.0, 0.0))
+        .padding_left(framebuffer_size.y as f64 * 0.1);
+
+        geng::ui::stack![visibility].boxed()
     }
 }

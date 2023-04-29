@@ -14,3 +14,23 @@ pub fn update_texture_size(texture: &mut ugli::Texture, size: vec2<usize>, geng:
         texture.set_filter(ugli::Filter::Nearest);
     }
 }
+
+pub fn draw_collider(
+    collider: &Collider,
+    color: Rgba<f32>,
+    geng: &Geng,
+    framebuffer: &mut ugli::Framebuffer,
+    camera: &Camera2d,
+) {
+    let rotation = collider.rotation.as_f32();
+    let collider = collider.raw().map(Coord::as_f32);
+    let center = collider.center();
+    geng.draw2d().draw2d(
+        framebuffer,
+        camera,
+        &draw2d::Quad::new(collider, color)
+            .translate(-center)
+            .rotate(rotation)
+            .translate(center),
+    );
+}

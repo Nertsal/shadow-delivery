@@ -88,9 +88,5 @@ void main() {
     shaded_color += light_color * u_light_volume;
 
     gl_FragColor = vec4(shaded_color, 1.0);
-    // gl_FragColor = vec4(base_color, 1.0);
-    // gl_FragColor = vec4(normal_falloff, 0.0, 0.0, 1.0);
-    // gl_FragColor = vec4(light_dir * 0.5 + 0.5, 0.0, 1.0);
-    // gl_FragColor = vec4(normal * 0.5 + 0.5, 0.0, 1.0);
 }
 #endif
