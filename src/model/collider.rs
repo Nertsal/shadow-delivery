@@ -21,10 +21,16 @@ impl Collider {
         }
     }
 
-    pub fn shape(&self) -> impl parry2d::shape::Shape {
+    pub fn vertices(&self) -> [vec2<Coord>; 4] {
         let center = self.aabb.center();
-        let points = self.aabb.corners().map(|p| {
-            let vec2(x, y) = ((p - center).rotate(self.rotation) + center).map(Coord::as_f32);
+        self.aabb
+            .corners()
+            .map(|p| (p - center).rotate(self.rotation) + center)
+    }
+
+    pub fn shape(&self) -> impl parry2d::shape::Shape {
+        let points = self.vertices().map(|p| {
+            let vec2(x, y) = p.map(Coord::as_f32);
             parry2d::math::Point::new(x, y)
         });
         parry2d::shape::ConvexPolygon::from_convex_hull(&points).unwrap()
