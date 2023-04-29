@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 ecs = { git = "https://github.com/geng-engine/ecs", version = "0.1.0" }
 geng = { git = "https://github.com/geng-engine/geng", version = "0.14.0" }
+serde = { version = "1.0.160", features = ["derive"] }
