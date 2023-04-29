@@ -17,12 +17,13 @@ pub struct World {
     pub obstacles: StructOf<Vec<Obstacle>>,
     pub camera: Camera2d,
     pub global_light: GlobalLight,
-    pub spotlights: Vec<Spotlight>,
 }
 
 #[derive(StructOf, Serialize, Deserialize)]
 pub struct Obstacle {
     pub collider: Collider,
+    /// In relative coordinates.
+    pub lights: Vec<Spotlight>,
 }
 
 pub struct Player {
@@ -50,7 +51,6 @@ impl World {
                 color: Rgba::WHITE,
                 intensity: 0.1,
             },
-            spotlights: vec![Spotlight::default()],
         }
     }
 

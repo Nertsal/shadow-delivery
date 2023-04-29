@@ -4,7 +4,17 @@
       "collider": {
         "min": [-4.0, -2.0],
         "max": [-1.0, -0.5]
-      }
+      },
+      "lights": [
+        {
+          "position": [1.4, 0.6],
+          "angle_range": 0.7
+        },
+        {
+          "position": [1.4, -0.6],
+          "angle_range": 0.7
+        }
+      ]
     }
   ]
 }

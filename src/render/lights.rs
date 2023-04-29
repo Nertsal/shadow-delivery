@@ -123,7 +123,15 @@ impl LightsRender {
         camera: &Camera2d,
         geometry: &ugli::VertexBuffer<NormalVertex>,
     ) {
-        for spotlight in &world.spotlights {
+        let spotlights = world.obstacles.iter().flat_map(|(_, obstacle)| {
+            obstacle
+                .lights
+                .iter()
+                .map(|(_, light)| (light, obstacle.collider.pos()))
+        });
+        for (spotlight, offset) in spotlights {
+            let light_pos = (spotlight.position + offset).map(Coord::as_f32);
+
             // Using `world_texture` here but it is not actually used by the shader
             let mut light_framebuffer = ugli::Framebuffer::new(
                 self.geng.ugli(),
@@ -142,7 +150,7 @@ impl LightsRender {
                 (
                     ugli::uniforms! {
                         u_model_matrix: mat3::identity(),
-                        u_light_pos: spotlight.position.map(Coord::as_f32),
+                        u_light_pos: light_pos,
                     },
                     camera.uniforms(framebuffer_size),
                 ),
@@ -182,7 +190,7 @@ impl LightsRender {
                 (
                     ugli::uniforms! {
                         u_model_matrix: mat3::identity(),
-                        u_light_pos: spotlight.position.map(Coord::as_f32),
+                        u_light_pos: light_pos,
                         u_light_angle: spotlight.angle,
                         u_light_angle_range: spotlight.angle_range,
                         u_light_angle_gradient: spotlight.angle_gradient,
