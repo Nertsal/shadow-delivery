@@ -21,7 +21,8 @@ pub struct World {
     pub global_light: GlobalLight,
 }
 
-#[derive(StructOf, Serialize, Deserialize)]
+#[derive(StructOf, Serialize, Deserialize, Default)]
+#[serde(default)]
 pub struct Obstacle {
     pub collider: Collider,
     /// In relative coordinates.
