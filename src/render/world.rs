@@ -22,13 +22,38 @@ impl WorldRender {
     }
 
     pub fn draw_hitboxes(&mut self, world: &World, framebuffer: &mut ugli::Framebuffer) {
+        #[derive(StructQuery)]
+        struct ObstacleRef<'a> {
+            collider: &'a Collider,
+        }
+        for obstacle in query_obstacle_ref!(world.obstacles).values() {
+            self.draw_collider(
+                obstacle.collider,
+                Rgba::new(0.3, 0.3, 0.3, 0.5),
+                &world.camera,
+                framebuffer,
+            );
+        }
+
+        self.draw_collider(
+            &world.player.collider,
+            Rgba::new(0.0, 1.0, 0.0, 0.5),
+            &world.camera,
+            framebuffer,
+        );
+    }
+
+    pub fn draw_collider(
+        &self,
+        collider: &Collider,
+        color: Rgba<f32>,
+        camera: &Camera2d,
+        framebuffer: &mut ugli::Framebuffer,
+    ) {
         self.geng.draw2d().draw2d(
             framebuffer,
-            &world.camera,
-            &draw2d::Quad::new(
-                world.player.collider.raw().map(Coord::as_f32),
-                Rgba::new(0.0, 1.0, 0.0, 0.5),
-            ),
+            camera,
+            &draw2d::Quad::new(collider.raw().map(Coord::as_f32), color),
         );
     }
 }

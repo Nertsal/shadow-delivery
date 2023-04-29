@@ -1,9 +1,11 @@
 use super::*;
 
 mod collider;
+mod level;
 mod lights;
 
 pub use collider::*;
+pub use level::*;
 pub use lights::*;
 
 const PLAYER_SIZE: vec2<f32> = vec2(0.2, 0.6);
@@ -12,9 +14,15 @@ pub type Coord = R32;
 
 pub struct World {
     pub player: Player,
+    pub obstacles: StructOf<Vec<Obstacle>>,
     pub camera: Camera2d,
     pub global_light: GlobalLight,
     pub spotlights: Vec<Spotlight>,
+}
+
+#[derive(StructOf, Serialize, Deserialize)]
+pub struct Obstacle {
+    pub collider: Collider,
 }
 
 pub struct Player {
@@ -22,17 +30,26 @@ pub struct Player {
 }
 
 impl World {
-    pub fn new() -> Self {
+    pub fn new(level: Level) -> Self {
+        let mut obstacles = StructOf::<Vec<Obstacle>>::new();
+        for obstacle in level.obstacles {
+            obstacles.insert(obstacle);
+        }
+
         Self {
             player: Player {
                 collider: Collider::new(Aabb2::ZERO.extend_symmetric(PLAYER_SIZE.map(Coord::new))),
             },
+            obstacles,
             camera: Camera2d {
                 center: vec2::ZERO,
                 rotation: 0.0,
                 fov: 30.0,
             },
-            global_light: GlobalLight::default(),
+            global_light: GlobalLight {
+                color: Rgba::WHITE,
+                intensity: 0.1,
+            },
             spotlights: vec![Spotlight::default()],
         }
     }

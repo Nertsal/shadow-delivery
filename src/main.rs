@@ -20,7 +20,12 @@ fn main() {
             let assets: Assets = geng::Load::load(geng.asset_manager(), &run_dir().join("assets"))
                 .await
                 .expect("Failed to load assets");
-            game::Game::new(&geng, &Rc::new(assets))
+
+            let level: model::Level = file::load_json(run_dir().join("assets").join("level.json"))
+                .await
+                .expect("Failed to load level");
+
+            game::Game::new(&geng, &Rc::new(assets), level)
         }
     };
 

@@ -1,5 +1,5 @@
 use crate::{
-    model::World,
+    model::{Level, World},
     render::{GameRender, RenderCache},
 };
 
@@ -15,8 +15,8 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn new(geng: &Geng, assets: &Rc<Assets>) -> Self {
-        let world = World::new();
+    pub fn new(geng: &Geng, assets: &Rc<Assets>, level: Level) -> Self {
+        let world = World::new(level);
         Self {
             geng: geng.clone(),
             assets: assets.clone(),
