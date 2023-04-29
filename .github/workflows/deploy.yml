@@ -1,6 +1,9 @@
 name: Deploy
 on: push
 
+permissions:
+  contents: write
+
 jobs:
   build-web:
     name: Build (Web)
