@@ -3,6 +3,8 @@ use geng::prelude::*;
 
 mod assets;
 mod game;
+mod model;
+mod render;
 
 use assets::Assets;
 
