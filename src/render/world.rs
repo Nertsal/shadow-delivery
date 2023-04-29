@@ -50,10 +50,16 @@ impl WorldRender {
         camera: &Camera2d,
         framebuffer: &mut ugli::Framebuffer,
     ) {
+        let rotation = collider.rotation.as_f32();
+        let collider = collider.raw().map(Coord::as_f32);
+        let center = collider.center();
         self.geng.draw2d().draw2d(
             framebuffer,
             camera,
-            &draw2d::Quad::new(collider.raw().map(Coord::as_f32), color),
+            &draw2d::Quad::new(collider, color)
+                .translate(-center)
+                .rotate(rotation)
+                .translate(center),
         );
     }
 }

@@ -30,7 +30,6 @@ pub struct Obstacle {
 
 pub struct Player {
     pub collider: Collider,
-    pub rotation: Coord,
     pub speed: Coord,
 }
 
@@ -49,7 +48,6 @@ impl World {
         Self {
             player: Player {
                 collider: Collider::new(Aabb2::ZERO.extend_symmetric(PLAYER_SIZE.map(Coord::new))),
-                rotation: Coord::ZERO,
                 speed: Coord::ZERO,
             },
             obstacles,

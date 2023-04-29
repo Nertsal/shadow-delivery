@@ -11,14 +11,14 @@ impl World {
     }
 
     fn control_player(&mut self, control: PlayerControl, delta_time: Time) {
-        self.player.rotation += control.turn * Coord::new(PLAYER_TURN_SPEED) * delta_time;
+        self.player.collider.rotation += control.turn * Coord::new(PLAYER_TURN_SPEED) * delta_time;
         let target_speed =
             self.player.speed + control.accelerate * Coord::new(PLAYER_ACCELERATION) * delta_time;
         self.player.speed = target_speed.clamp(Coord::ZERO, Coord::new(PLAYER_MAX_SPEED));
     }
 
     fn movement(&mut self, delta_time: Time) {
-        let dir = vec2::UNIT_X.rotate(self.player.rotation);
+        let dir = vec2::UNIT_X.rotate(self.player.collider.rotation);
         let delta = dir * self.player.speed * delta_time;
         self.player.collider.translate(delta);
     }

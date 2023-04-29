@@ -1,31 +1,49 @@
 use super::*;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub struct Collider(Aabb2<Coord>);
+#[serde(default)]
+pub struct Collider {
+    aabb: Aabb2<Coord>,
+    pub rotation: Coord,
+}
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Collision {
     pub normal: vec2<Coord>,
     pub penetration: Coord,
-    pub offset_dir: vec2<Coord>,
-    pub offset: Coord,
 }
 
 impl Collider {
     pub fn new(aabb: Aabb2<Coord>) -> Self {
-        Self(aabb)
+        Self {
+            aabb,
+            rotation: Coord::ZERO,
+        }
+    }
+
+    pub fn shape(&self) -> impl parry2d::shape::Shape {
+        let center = self.aabb.center();
+        let points = self.aabb.corners().map(|p| {
+            let vec2(x, y) = ((p - center).rotate(self.rotation) + center).map(Coord::as_f32);
+            parry2d::math::Point::new(x, y)
+        });
+        parry2d::shape::ConvexPolygon::from_convex_hull(&points).unwrap()
     }
 
     pub fn raw(&self) -> Aabb2<Coord> {
-        self.0
+        self.aabb
     }
 
     pub fn pos(&self) -> vec2<Coord> {
-        self.0.center()
+        self.aabb.center()
     }
 
     pub fn size(&self) -> vec2<Coord> {
-        self.0.size()
+        self.aabb.size()
+    }
+
+    pub fn rotate(&mut self, delta: Coord) {
+        self.rotation += delta;
     }
 
     pub fn teleport(&mut self, position: vec2<Coord>) {
@@ -34,61 +52,33 @@ impl Collider {
     }
 
     pub fn translate(&mut self, delta: vec2<Coord>) {
-        self.0 = self.0.translate(delta);
+        self.aabb = self.aabb.translate(delta);
     }
 
     pub fn check(&self, other: &Self) -> bool {
-        self.0.intersects(&other.0)
+        let iso = parry2d::math::Isometry::default();
+        parry2d::query::intersection_test(&iso, &self.shape(), &iso, &other.shape()).unwrap()
     }
 
     pub fn collide(&self, other: &Self) -> Option<Collision> {
-        if !self.check(other) {
-            return None;
-        }
-
-        let dx_right = self.0.max.x - other.0.min.x;
-        let dx_left = other.0.max.x - self.0.min.x;
-        let dy_up = self.0.max.y - other.0.min.y;
-        let dy_down = other.0.max.y - self.0.min.y;
-
-        let (nx, px) = if dx_right < dx_left {
-            (-Coord::ONE, dx_right)
-        } else {
-            (Coord::ONE, dx_left)
-        };
-        let (ny, py) = if dy_up < dy_down {
-            (-Coord::ONE, dy_up)
-        } else {
-            (Coord::ONE, dy_down)
-        };
-
-        if px <= Coord::ZERO || py <= Coord::ZERO {
-            None
-        } else if px < py {
-            Some(Collision {
-                normal: vec2(nx, Coord::ZERO),
-                penetration: px,
-                offset_dir: vec2(Coord::ZERO, ny),
-                offset: py,
+        let iso = parry2d::math::Isometry::default();
+        parry2d::query::contact(&iso, &self.shape(), &iso, &other.shape(), 0.0)
+            .unwrap()
+            .map(|contact| {
+                let normal = contact.normal1.into_inner();
+                Collision {
+                    normal: vec2(normal.x, normal.y).map(Coord::new),
+                    penetration: Coord::new(-contact.dist),
+                }
             })
-        } else {
-            Some(Collision {
-                normal: vec2(Coord::ZERO, ny),
-                penetration: py,
-                offset_dir: vec2(nx, Coord::ZERO),
-                offset: px,
-            })
-        }
     }
 }
 
-impl Collision {
-    pub fn rotate(self) -> Self {
+impl Default for Collider {
+    fn default() -> Self {
         Self {
-            normal: self.offset_dir,
-            penetration: self.offset,
-            offset_dir: self.normal,
-            offset: self.penetration,
+            aabb: Aabb2::ZERO.extend_uniform(Coord::ONE),
+            rotation: Coord::ZERO,
         }
     }
 }

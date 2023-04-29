@@ -9,6 +9,9 @@ mod render;
 use assets::Assets;
 
 fn main() {
+    logger::init();
+    geng::setup_panic_handler();
+
     let geng = Geng::new_with(geng::ContextOptions {
         title: "Shadow Delivery".to_string(),
         ..default()
