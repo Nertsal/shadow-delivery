@@ -51,15 +51,20 @@ impl GameRender {
     pub fn draw(
         &mut self,
         world: &World,
+        draw_hitboxes: bool,
         cache: &RenderCache,
         framebuffer: &mut ugli::Framebuffer,
     ) {
+        // Lighting
         let (mut world_framebuffer, mut normal_framebuffer) = self.lights.start_render(framebuffer);
-
         self.world
             .draw(world, &mut world_framebuffer, &mut normal_framebuffer);
-
         self.lights
-            .finish_render(world, cache, &world.camera, framebuffer)
+            .finish_render(world, cache, &world.camera, framebuffer);
+
+        // Hitboxes
+        if draw_hitboxes {
+            self.world.draw_hitboxes(world, framebuffer);
+        }
     }
 }
