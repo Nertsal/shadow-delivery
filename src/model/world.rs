@@ -2,6 +2,7 @@ use super::*;
 
 pub struct World {
     pub player: Player,
+    pub active_waypoint: usize,
     pub level: Level,
     pub camera: Camera2d,
 }
@@ -16,6 +17,7 @@ impl World {
                 collider: Collider::new(Aabb2::ZERO.extend_symmetric(PLAYER_SIZE.map(Coord::new))),
                 velocity: vec2::ZERO,
             },
+            active_waypoint: 0,
             level,
             camera: Camera2d {
                 center: vec2::ZERO,

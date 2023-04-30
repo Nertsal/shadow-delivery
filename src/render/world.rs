@@ -60,7 +60,7 @@ impl WorldRender {
             .map(|item| (item, Rgba::new(0.3, 0.3, 0.3, 0.5)))
             .chain(
                 waypoints
-                    .values()
+                    .get(world.active_waypoint)
                     .map(|item| (item, Rgba::new(0.0, 1.0, 1.0, 0.5))),
             )
             .chain(std::iter::once((

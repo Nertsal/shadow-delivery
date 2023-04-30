@@ -1,5 +1,8 @@
 use super::*;
 
+const WAYPOINT_DISTANCE_MIN: f32 = 5.0;
+const WAYPOINT_DISTANCE_MAX: f32 = 20.0;
+
 const DEATH_PENALTY: Score = 1000;
 const DELIVER_SCORE: Score = 500;
 const SHADOW_BONUS: Score = 1000;
@@ -141,23 +144,53 @@ impl World {
         }
 
         let player = &mut self.player;
-        let mut hits = query_waypoint_ref!(self.level.waypoints)
-            .iter()
-            .filter(|(_, waypoint)| player.collider.check(waypoint.collider))
-            .map(|(id, _)| id)
-            .collect::<Vec<_>>();
-        hits.sort();
-        let collected = !hits.is_empty();
-        for id in hits.into_iter().rev() {
-            self.level.waypoints.remove(id);
+        let query = query_waypoint_ref!(self.level.waypoints);
+
+        let active_id = self.active_waypoint;
+        let Some(active) = query.get(active_id) else {
+            self.next_waypoint();
+            return;
+        };
+
+        if player.collider.check(active.collider) {
             player.score += DELIVER_SCORE;
             if player.shadow_bonus {
                 player.score += SHADOW_BONUS;
             }
-        }
-
-        if collected {
             player.shadow_bonus = true;
+            self.next_waypoint();
         }
+    }
+
+    fn next_waypoint(&mut self) {
+        #[derive(StructQuery)]
+        struct WaypointRef<'a> {
+            collider: &'a Collider,
+        }
+        let query = query_waypoint_ref!(self.level.waypoints);
+
+        let Some(last) = query.get(self.active_waypoint) else {
+            self.active_waypoint = 0;
+            return;
+        };
+
+        let mut rng = thread_rng();
+
+        let next = self
+            .level
+            .waypoints
+            .ids()
+            .filter(|&id| id != self.active_waypoint)
+            .filter_map(|id| query.get(id).map(|item| (id, item)))
+            .filter(|(_, item)| {
+                let delta = item.collider.pos() - last.collider.pos();
+                let distance = delta.len().as_f32();
+                (WAYPOINT_DISTANCE_MIN..=WAYPOINT_DISTANCE_MAX).contains(&distance)
+            })
+            .map(|(id, _)| id)
+            .choose(&mut rng);
+
+        let next = next.or_else(|| self.level.waypoints.ids().choose(&mut rng));
+        self.active_waypoint = next.unwrap_or(0);
     }
 }
