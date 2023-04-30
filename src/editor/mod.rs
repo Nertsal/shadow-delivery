@@ -12,9 +12,22 @@ pub struct Editor {
     assets: Rc<Assets>,
     render: EditorRender,
     render_cache: RenderCache,
+    framebuffer_size: vec2<usize>,
     world: World,
     level_path: PathBuf,
     mode: EditorMode,
+    drag: Option<Drag>,
+}
+
+pub struct Drag {
+    pub from: vec2<Coord>,
+    pub target: DragTarget,
+}
+
+pub enum DragTarget {
+    Spawn,
+    Waypoint(usize),
+    Obstacle(usize),
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -32,9 +45,11 @@ impl Editor {
             assets: assets.clone(),
             render: EditorRender::new(geng, assets),
             render_cache: RenderCache::calculate(&world, geng, assets),
+            framebuffer_size: vec2(1, 1),
             world,
             level_path,
             mode: EditorMode::Spawn,
+            drag: None,
         }
     }
 
@@ -46,10 +61,102 @@ impl Editor {
         }
         Ok(())
     }
+
+    fn screen_to_world(&self, position: vec2<f64>) -> vec2<Coord> {
+        self.world
+            .camera
+            .screen_to_world(
+                self.framebuffer_size.map(|x| x as f32),
+                position.map(|x| x as f32),
+            )
+            .map(Coord::new)
+    }
+
+    fn click(&mut self, position: vec2<f64>) {
+        let world_pos = self.screen_to_world(position);
+
+        if let Some(target) = self.find_target(world_pos) {
+            self.drag = Some(Drag {
+                from: world_pos,
+                target,
+            });
+        }
+    }
+
+    fn update_cursor(&mut self, position: vec2<f64>) {
+        let world_pos = self.screen_to_world(position);
+
+        if let Some(drag) = &mut self.drag {
+            match drag.target {
+                DragTarget::Spawn => {
+                    self.world.level.spawn_point = world_pos;
+                }
+                DragTarget::Waypoint(id) => {
+                    self.world
+                        .level
+                        .waypoints
+                        .collider
+                        .get_mut(id)
+                        .unwrap()
+                        .teleport(world_pos);
+                }
+                DragTarget::Obstacle(id) => {
+                    self.world
+                        .level
+                        .obstacles
+                        .collider
+                        .get_mut(id)
+                        .unwrap()
+                        .teleport(world_pos);
+                }
+            }
+        }
+    }
+
+    fn release(&mut self) {
+        if let Some(drag) = self.drag.take() {
+            // TODO
+        }
+    }
+
+    fn find_target(&self, position: vec2<Coord>) -> Option<DragTarget> {
+        let mut player_collider = self.world.player.collider;
+        player_collider.teleport(self.world.level.spawn_point);
+
+        #[derive(StructQuery)]
+        struct ColliderRef<'a> {
+            collider: &'a Collider,
+        }
+
+        let waypoints = query_collider_ref!(self.world.level.waypoints);
+        let obstacles = query_collider_ref!(self.world.level.obstacles);
+        let mut colliders = std::iter::once((
+            DragTarget::Spawn,
+            ColliderRef {
+                collider: &player_collider,
+            },
+        ))
+        .chain(
+            waypoints
+                .iter()
+                .map(|(id, item)| (DragTarget::Waypoint(id), item)),
+        )
+        .chain(
+            obstacles
+                .iter()
+                .map(|(id, item)| (DragTarget::Obstacle(id), item)),
+        );
+
+        let target = Collider::new(Aabb2::point(position).extend_uniform(Coord::new(0.01)));
+        colliders
+            .find(|(_, item)| item.collider.check(&target))
+            .map(|(id, _)| id)
+    }
 }
 
 impl geng::State for Editor {
     fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
+        self.framebuffer_size = framebuffer.size();
         ugli::clear(framebuffer, Some(Rgba::BLACK), None, None);
         self.render
             .draw(&self.world, &self.mode, &self.render_cache, framebuffer);
@@ -86,6 +193,21 @@ impl geng::State for Editor {
                 }
                 _ => {}
             },
+            geng::Event::MouseDown {
+                position,
+                button: geng::MouseButton::Left,
+            } => {
+                self.click(position);
+            }
+            geng::Event::MouseMove { position, .. } => {
+                self.update_cursor(position);
+            }
+            geng::Event::MouseUp {
+                button: geng::MouseButton::Left,
+                ..
+            } => {
+                self.release();
+            }
             _ => {}
         }
     }
