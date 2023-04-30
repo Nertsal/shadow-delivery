@@ -130,3 +130,18 @@ impl geng::State for Game {
         geng::ui::stack![visibility, health, score].boxed()
     }
 }
+
+pub fn run(geng: &Geng) -> impl Future<Output = impl geng::State> {
+    let geng = geng.clone();
+    async move {
+        let assets: Assets = geng::Load::load(geng.asset_manager(), &run_dir().join("assets"))
+            .await
+            .expect("Failed to load assets");
+
+        let level: model::Level = file::load_json(run_dir().join("assets").join("level.json"))
+            .await
+            .expect("Failed to load level");
+
+        Game::new(&geng, &Rc::new(assets), level)
+    }
+}

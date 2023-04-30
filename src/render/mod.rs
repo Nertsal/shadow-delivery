@@ -3,6 +3,7 @@ use crate::model::*;
 use super::*;
 
 mod cache;
+mod editor;
 mod game;
 mod lights;
 mod player;
@@ -10,6 +11,7 @@ mod util;
 mod world;
 
 pub use cache::*;
+pub use editor::*;
 pub use game::*;
 pub use lights::*;
 pub use player::*;
