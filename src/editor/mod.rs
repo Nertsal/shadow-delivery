@@ -63,6 +63,7 @@ impl Editor {
         {
             let writer = std::io::BufWriter::new(std::fs::File::create(&self.level_path)?);
             serde_json::to_writer_pretty(writer, &self.world.level)?;
+            log::info!("Saved the level at {:?}", self.level_path);
         }
         Ok(())
     }
@@ -206,11 +207,35 @@ impl geng::State for Editor {
         );
     }
 
+    fn update(&mut self, delta_time: f64) {
+        let delta_time = delta_time as f32;
+
+        let window = self.geng.window();
+        let pressed = |keys: &[geng::Key]| keys.iter().any(|key| window.is_key_pressed(*key));
+
+        let mut camera_move = vec2::ZERO;
+        if pressed(&[geng::Key::W]) {
+            camera_move.y += 1.0;
+        }
+        if pressed(&[geng::Key::S]) {
+            camera_move.y -= 1.0;
+        }
+        if pressed(&[geng::Key::A]) {
+            camera_move.x -= 1.0;
+        }
+        if pressed(&[geng::Key::D]) {
+            camera_move.x += 1.0;
+        }
+
+        let speed = 20.0;
+        self.world.camera.center += camera_move * speed * delta_time;
+    }
+
     fn handle_event(&mut self, event: geng::Event) {
         match event {
             geng::Event::KeyDown { key } => match key {
                 geng::Key::S if self.geng.window().is_key_pressed(geng::Key::LCtrl) => {
-                    let _ = self.save();
+                    let _ = util::report_err(self.save());
                 }
                 geng::Key::Num1 => {
                     self.mode = EditorMode::Spawn;

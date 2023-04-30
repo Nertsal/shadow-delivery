@@ -6,6 +6,7 @@ mod editor;
 mod game;
 mod model;
 mod render;
+mod util;
 
 use assets::Assets;
 
