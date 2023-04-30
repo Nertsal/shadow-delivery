@@ -118,6 +118,15 @@ impl geng::State for Game {
         .align(vec2(0.0, 0.0))
         .padding_left(framebuffer_size.y as f64 * 0.1);
 
-        geng::ui::stack![visibility, health].boxed()
+        let score = geng::ui::Text::new(
+            format!("Score: {}", self.world.player.score),
+            self.geng.default_font(),
+            50.0,
+            Rgba::WHITE,
+        )
+        .fixed_size(framebuffer_size.map(|x| x.into()) * 0.1)
+        .align(vec2(0.5, 1.0));
+
+        geng::ui::stack![visibility, health, score].boxed()
     }
 }

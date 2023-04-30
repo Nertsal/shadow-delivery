@@ -1,5 +1,10 @@
 use super::*;
 
+const DEATH_PENALTY: Score = 1000;
+const DELIVER_SCORE: Score = 500;
+const SHADOW_BONUS: Score = 1000;
+const SHADOW_MAX_VIS: f32 = 0.1;
+
 const HEALTH_RESTORE: f32 = 10.0;
 const PLAYER_DRAG: f32 = 0.2;
 const PLAYER_MAX_SPEED: f32 = 5.0;
@@ -27,6 +32,10 @@ impl World {
                 .min(Health::new(100.0));
         }
 
+        if visibility.as_f32() > SHADOW_MAX_VIS {
+            self.player.shadow_bonus = false;
+        }
+
         self.player.health =
             (self.player.health - visibility * Health::new(100.0) * delta_time).max(Health::ZERO);
         if self.player.health <= Health::ZERO {
@@ -35,6 +44,8 @@ impl World {
     }
 
     fn kill_player(&mut self) {
+        self.player.shadow_bonus = true;
+        self.player.score = self.player.score.saturating_sub(DEATH_PENALTY);
         self.player.velocity = vec2::ZERO;
         self.player.health = Health::new(100.0);
         self.player.collider.teleport(self.level.spawn_point);
@@ -136,8 +147,17 @@ impl World {
             .map(|(id, _)| id)
             .collect::<Vec<_>>();
         hits.sort();
+        let collected = !hits.is_empty();
         for id in hits.into_iter().rev() {
             self.level.waypoints.remove(id);
+            player.score += DELIVER_SCORE;
+            if player.shadow_bonus {
+                player.score += SHADOW_BONUS;
+            }
+        }
+
+        if collected {
+            player.shadow_bonus = true;
         }
     }
 }

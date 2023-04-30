@@ -18,8 +18,11 @@ const PLAYER_SIZE: vec2<f32> = vec2(0.6, 0.2);
 pub type Coord = R32;
 pub type Time = R32;
 pub type Health = R32;
+pub type Score = u64;
 
 pub struct Player {
+    pub shadow_bonus: bool,
+    pub score: Score,
     pub health: Health,
     pub collider: Collider,
     pub velocity: vec2<Coord>,
