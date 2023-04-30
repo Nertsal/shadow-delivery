@@ -55,8 +55,15 @@ impl GameRender {
             .draw(world, &mut world_framebuffer, &mut normal_framebuffer);
         // Lights
         // self.lights.render_normal_map(&world.camera, &cache.normal_geometry);
-        self.lights
-            .render_lights(world, &world.camera, &cache.light_geometry);
+        let geometry = cache
+            .light_geometry
+            .as_slice()
+            .iter()
+            .copied()
+            .chain(world.calculate_dynamic_light_geometry())
+            .collect();
+        let geometry = ugli::VertexBuffer::new_dynamic(self.geng.ugli(), geometry);
+        self.lights.render_lights(world, &world.camera, &geometry);
         // Finish
         self.lights.finish(framebuffer);
 

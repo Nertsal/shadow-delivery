@@ -27,11 +27,13 @@ impl Editor {
             .draw(&self.world, &mut world_framebuffer, &mut normal_framebuffer);
         // Lights
         // self.render.lights.render_normal_map(&self.world.camera, &self.cache.normal_geometry);
-        self.render.lights.render_lights(
-            &self.world,
-            &self.world.camera,
-            &self.render_cache.light_geometry,
+        let geometry = ugli::VertexBuffer::new_dynamic(
+            self.geng.ugli(),
+            self.render_cache.light_geometry.clone(),
         );
+        self.render
+            .lights
+            .render_lights(&self.world, &self.world.camera, &geometry);
         // Finish
         self.render.lights.finish(framebuffer);
 

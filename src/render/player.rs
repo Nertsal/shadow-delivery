@@ -67,8 +67,10 @@ impl PlayerRender {
         let (mut world_framebuffer, _) = self.lights.start_render(Rgba::BLACK, framebuffer);
         draw_player(Rgba::WHITE, &mut world_framebuffer);
 
+        let geometry =
+            ugli::VertexBuffer::new_dynamic(self.geng.ugli(), cache.light_geometry.clone());
         self.lights
-            .render_spotlights(world, false, &camera, &cache.light_geometry);
+            .render_spotlights(world, false, &camera, &geometry);
         self.lights.finish(framebuffer);
 
         // Clear alpha from the framebuffer
