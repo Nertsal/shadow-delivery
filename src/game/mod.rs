@@ -88,11 +88,12 @@ impl geng::State for Game {
 
         let framebuffer_size = self.framebuffer_size.map(|x| x as f32);
 
+        let color = Rgba::lerp(Rgba::GREEN, Rgba::RED, self.player_visibilty);
         let visibility = geng::ui::Text::new(
             format!("Visibility: {:.0}%", self.player_visibilty * 100.0),
             self.geng.default_font(),
             30.0,
-            Rgba::WHITE,
+            color,
         )
         .align(vec2(0.5, 0.9))
         .fixed_size(framebuffer_size.map(|x| x.into()) * 0.1)

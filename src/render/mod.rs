@@ -21,7 +21,7 @@ const PLAYER_BACKGROUND_COLOR: Rgba<f32> = Rgba {
     a: 0.9,
 };
 const PLAYER_RESOLUTION: usize = 50;
-const VISIBILTY_THRESHOLD: f32 = 0.2;
+const VISIBILTY_THRESHOLD: f32 = 0.1;
 
 #[derive(ugli::Vertex, Debug, Clone, Copy)]
 pub struct NormalVertex {
