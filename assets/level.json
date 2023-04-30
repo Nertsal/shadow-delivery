@@ -2,7 +2,16 @@
   "global_light": {
     "intensity": 0.1
   },
-  "waypoints": [],
+  "waypoints": [
+    {
+      "collider": {
+        "aabb": {
+          "min": [-1.0, 7.5],
+          "max": [-0.5, 7.0]
+        }
+      }
+    }
+  ],
   "obstacles": [
     {
       "collider": {
