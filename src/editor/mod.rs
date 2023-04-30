@@ -6,6 +6,7 @@ use super::*;
 
 mod render;
 
+use geng::MouseButton;
 use render::*;
 
 pub struct Editor {
@@ -78,14 +79,39 @@ impl Editor {
             .map(Coord::new)
     }
 
-    fn click(&mut self, position: vec2<f64>) {
+    fn remove(&mut self, target: DragTarget) {
+        match target {
+            DragTarget::Waypoint(id) => {
+                self.world.level.waypoints.remove(id);
+            }
+            DragTarget::Obstacle(id) => {
+                self.world.level.obstacles.remove(id);
+            }
+            _ => {}
+        }
+    }
+
+    fn click(&mut self, position: vec2<f64>, button: MouseButton) {
         let world_pos = self.screen_to_world(position);
 
         if let Some(target) = self.find_target(world_pos) {
-            self.drag = Some(Drag {
-                from: world_pos,
-                target,
-            });
+            match button {
+                MouseButton::Left => {
+                    self.drag = Some(Drag {
+                        from: world_pos,
+                        target,
+                    });
+                    return;
+                }
+                MouseButton::Right => {
+                    self.remove(target);
+                    return;
+                }
+                MouseButton::Middle => todo!(),
+            }
+        }
+
+        if !matches!(button, MouseButton::Left) {
             return;
         }
 
@@ -248,17 +274,14 @@ impl geng::State for Editor {
                 }
                 _ => {}
             },
-            geng::Event::MouseDown {
-                position,
-                button: geng::MouseButton::Left,
-            } => {
-                self.click(position);
+            geng::Event::MouseDown { position, button } => {
+                self.click(position, button);
             }
             geng::Event::MouseMove { position, .. } => {
                 self.update_cursor(position);
             }
             geng::Event::MouseUp {
-                button: geng::MouseButton::Left,
+                button: MouseButton::Left,
                 ..
             } => {
                 self.release();
