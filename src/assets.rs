@@ -30,6 +30,7 @@ pub struct Sprites {
     pub car: Texture,
     pub wall: Texture,
     pub bike: Texture,
+    pub target: Texture,
 }
 
 impl Texture {

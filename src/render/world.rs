@@ -23,6 +23,7 @@ impl WorldRender {
         normal_framebuffer: &mut ugli::Framebuffer,
     ) {
         self.draw_obstacles(world, framebuffer, normal_framebuffer);
+        self.draw_waypoints(world, framebuffer, normal_framebuffer);
         self.draw_player(world, framebuffer, normal_framebuffer);
     }
 
@@ -63,6 +64,28 @@ impl WorldRender {
             self.draw_simple(
                 item.collider,
                 texture,
+                &world.camera,
+                framebuffer,
+                normal_framebuffer,
+            );
+        }
+    }
+
+    pub fn draw_waypoints(
+        &mut self,
+        world: &World,
+        framebuffer: &mut ugli::Framebuffer,
+        normal_framebuffer: &mut ugli::Framebuffer,
+    ) {
+        #[derive(StructQuery)]
+        struct WaypointRef<'a> {
+            collider: &'a Collider,
+        }
+        let query = query_waypoint_ref!(world.level.waypoints);
+        if let Some(item) = query.get(world.active_waypoint) {
+            self.draw_simple(
+                item.collider,
+                &self.assets.sprites.target,
                 &world.camera,
                 framebuffer,
                 normal_framebuffer,
