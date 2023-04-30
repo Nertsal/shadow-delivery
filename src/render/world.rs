@@ -55,7 +55,7 @@ impl WorldRender {
         for item in query_obstacle_ref!(world.level.obstacles).values() {
             let texture = if item.lights.is_empty() {
                 // House
-                continue;
+                &self.assets.sprites.wall
             } else {
                 // Car
                 &self.assets.sprites.car
