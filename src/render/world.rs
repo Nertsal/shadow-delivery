@@ -26,7 +26,7 @@ impl WorldRender {
         struct ObstacleRef<'a> {
             collider: &'a Collider,
         }
-        for obstacle in query_obstacle_ref!(world.obstacles).values() {
+        for obstacle in query_obstacle_ref!(world.level.obstacles).values() {
             draw_collider(
                 obstacle.collider,
                 Rgba::new(0.3, 0.3, 0.3, 0.5),

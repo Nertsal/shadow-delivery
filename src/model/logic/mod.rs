@@ -39,7 +39,7 @@ impl World {
 
         let player = &mut self.player;
 
-        for obstacle in query_obstacle_ref!(self.obstacles).values() {
+        for obstacle in query_obstacle_ref!(self.level.obstacles).values() {
             if let Some(collision) = player.collider.collide(obstacle.collider) {
                 player
                     .collider

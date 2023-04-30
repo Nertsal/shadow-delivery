@@ -93,8 +93,8 @@ impl LightsRender {
             ugli::uniforms! {
                 u_framebuffer_size: framebuffer_size,
                 u_source_texture: &self.buffers.world_texture,
-                u_light_color: world.global_light.color,
-                u_light_intensity: world.global_light.intensity,
+                u_light_color: world.level.global_light.color,
+                u_light_intensity: world.level.global_light.intensity,
             },
             ugli::DrawParameters {
                 blend_mode: Some(ugli::BlendMode::combined(ugli::ChannelBlendMode {
@@ -114,7 +114,7 @@ impl LightsRender {
         camera: &Camera2d,
         geometry: &ugli::VertexBuffer<NormalVertex>,
     ) {
-        let spotlights = world.obstacles.iter().flat_map(|(_, obstacle)| {
+        let spotlights = world.level.obstacles.iter().flat_map(|(_, obstacle)| {
             obstacle
                 .lights
                 .iter()
