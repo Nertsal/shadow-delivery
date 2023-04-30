@@ -35,6 +35,7 @@ impl Editor {
         // Finish
         self.render.lights.finish(framebuffer);
 
+        self.render.world.draw_paths(&self.world, framebuffer);
         self.render.world.draw_hitboxes(&self.world, framebuffer);
 
         match self.mode {

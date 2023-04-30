@@ -59,6 +59,16 @@ impl Editor {
         }
     }
 
+    pub fn load(&mut self) -> anyhow::Result<()> {
+        #[cfg(not(target = "wasm32"))]
+        {
+            let reader = std::io::BufReader::new(std::fs::File::open(&self.level_path)?);
+            self.world.level = serde_json::from_reader(reader)?;
+            log::info!("Loaded level from {:?}", self.level_path);
+        }
+        Ok(())
+    }
+
     pub fn save(&self) -> anyhow::Result<()> {
         #[cfg(not(target = "wasm32"))]
         {
@@ -258,10 +268,14 @@ impl geng::State for Editor {
     }
 
     fn handle_event(&mut self, event: geng::Event) {
+        let ctrl = self.geng.window().is_key_pressed(geng::Key::LCtrl);
         match event {
             geng::Event::KeyDown { key } => match key {
-                geng::Key::S if self.geng.window().is_key_pressed(geng::Key::LCtrl) => {
+                geng::Key::S if ctrl => {
                     let _ = util::report_err(self.save());
+                }
+                geng::Key::L if ctrl => {
+                    let _ = util::report_err(self.load());
                 }
                 geng::Key::Num1 => {
                     self.mode = EditorMode::Spawn;
