@@ -416,7 +416,7 @@
             0.3
           ],
           "angle": 0.0,
-          "angle_range": 0.7,
+          "angle_range": 1.0,
           "angle_gradient": 1.0,
           "color": "#ffffff",
           "intensity": 0.5,
@@ -430,7 +430,7 @@
             -0.3
           ],
           "angle": 0.0,
-          "angle_range": 0.7,
+          "angle_range": 1.0,
           "angle_gradient": 1.0,
           "color": "#ffffff",
           "intensity": 0.5,

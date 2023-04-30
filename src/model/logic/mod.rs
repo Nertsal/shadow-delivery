@@ -95,7 +95,7 @@ impl World {
             };
 
             let speed = Coord::new(5.0);
-            let angular_speed = Coord::new(2.0);
+            let angular_speed = Coord::new(5.0);
 
             let delta = target - item.collider.pos();
             let len = delta.len();
