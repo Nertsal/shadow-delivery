@@ -376,20 +376,110 @@
       "path": {
         "points": [
           [
-            10.0,
-            0.0
+            9.0,
+            -1.0
           ],
           [
-            10.0,
-            -10.0
+            9.0,
+            -11.0
           ],
           [
-            -20.0,
-            -10.0
+            -10.0,
+            -11.0
           ],
           [
-            -20.0,
-            0.0
+            -10.0,
+            -1.0
+          ]
+        ],
+        "next_point": 0
+      }
+    },
+    {
+      "collider": {
+        "aabb": {
+          "min": [
+            -9.5,
+            21.0
+          ],
+          "max": [
+            -7.5,
+            22.0
+          ]
+        },
+        "rotation": 0.0
+      },
+      "lights": [
+        {
+          "position": [
+            1.0,
+            0.3
+          ],
+          "angle": 0.0,
+          "angle_range": 1.0,
+          "angle_gradient": 1.0,
+          "color": "#ffffff",
+          "intensity": 0.5,
+          "max_distance": 5.0,
+          "distance_gradient": 1.0,
+          "volume": 0.5
+        },
+        {
+          "position": [
+            1.0,
+            -0.3
+          ],
+          "angle": 0.0,
+          "angle_range": 1.0,
+          "angle_gradient": 1.0,
+          "color": "#ffffff",
+          "intensity": 0.5,
+          "max_distance": 5.0,
+          "distance_gradient": 1.0,
+          "volume": 0.5
+        }
+      ],
+      "path": {
+        "points": [
+          [
+            -6.0,
+            22.0
+          ],
+          [
+            -6.0,
+            15.0
+          ],
+          [
+            0.0,
+            15.0
+          ],
+          [
+            2.0,
+            11.0
+          ],
+          [
+            11.0,
+            11.0
+          ],
+          [
+            11.0,
+            7.0
+          ],
+          [
+            3.0,
+            7.0
+          ],
+          [
+            0.0,
+            12.0
+          ],
+          [
+            -11.0,
+            12.0
+          ],
+          [
+            -11.0,
+            22.0
           ]
         ],
         "next_point": 0
