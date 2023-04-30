@@ -24,25 +24,29 @@ impl WorldRender {
 
     pub fn draw_hitboxes(&mut self, world: &World, framebuffer: &mut ugli::Framebuffer) {
         #[derive(StructQuery)]
-        struct ObstacleRef<'a> {
+        struct ColliderRef<'a> {
             collider: &'a Collider,
         }
-        for obstacle in query_obstacle_ref!(world.level.obstacles).values() {
-            draw_collider(
-                obstacle.collider,
-                Rgba::new(0.3, 0.3, 0.3, 0.5),
-                &self.geng,
-                framebuffer,
-                &world.camera,
-            );
-        }
 
-        draw_collider(
-            &world.player.collider,
-            Rgba::new(0.0, 1.0, 0.0, 0.5),
-            &self.geng,
-            framebuffer,
-            &world.camera,
-        );
+        let obstacles = query_collider_ref!(world.level.obstacles);
+        let waypoints = query_collider_ref!(world.level.waypoints);
+        let colliders = obstacles
+            .values()
+            .map(|item| (item, Rgba::new(0.3, 0.3, 0.3, 0.5)))
+            .chain(
+                waypoints
+                    .values()
+                    .map(|item| (item, Rgba::new(0.0, 1.0, 1.0, 0.5))),
+            )
+            .chain(std::iter::once((
+                ColliderRef {
+                    collider: &world.player.collider,
+                },
+                Rgba::new(0.0, 1.0, 0.0, 0.5),
+            )));
+
+        for (item, color) in colliders {
+            draw_collider(item.collider, color, &self.geng, framebuffer, &world.camera);
+        }
     }
 }
