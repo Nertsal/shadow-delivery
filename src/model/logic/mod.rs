@@ -1,17 +1,44 @@
 use super::*;
 
+const HEALTH_RESTORE: f32 = 10.0;
 const PLAYER_DRAG: f32 = 0.2;
 const PLAYER_MAX_SPEED: f32 = 5.0;
 const PLAYER_TURN_SPEED: f32 = 3.0;
 const PLAYER_ACCELERATION: f32 = 10.0;
 
 impl World {
-    pub fn update(&mut self, player_control: PlayerControl, delta_time: Time) {
+    pub fn update(
+        &mut self,
+        player_control: PlayerControl,
+        player_visibility: R32,
+        delta_time: Time,
+    ) {
+        self.update_player(player_visibility, delta_time);
         self.control_player(player_control, delta_time);
         self.obstacles_movement(delta_time);
         self.player_movement(delta_time);
         self.collisions();
         self.waypoints();
+    }
+
+    fn update_player(&mut self, visibility: R32, delta_time: Time) {
+        if visibility == R32::ZERO {
+            self.player.health = (self.player.health + Health::new(HEALTH_RESTORE) * delta_time)
+                .min(Health::new(100.0));
+        }
+
+        self.player.health =
+            (self.player.health - visibility * Health::new(100.0) * delta_time).max(Health::ZERO);
+        if self.player.health <= Health::ZERO {
+            self.kill_player();
+        }
+    }
+
+    fn kill_player(&mut self) {
+        self.player.velocity = vec2::ZERO;
+        self.player.health = Health::new(100.0);
+        self.player.collider.teleport(self.level.spawn_point);
+        self.player.collider.rotation = Angle::ZERO;
     }
 
     fn control_player(&mut self, control: PlayerControl, delta_time: Time) {

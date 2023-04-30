@@ -3,9 +3,10 @@ use super::*;
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(into = "LevelSerde", from = "LevelSerde")]
 pub struct Level {
+    pub spawn_point: vec2<Coord>,
+    pub global_light: GlobalLight,
     pub waypoints: StructOf<Vec<Waypoint>>,
     pub obstacles: StructOf<Vec<Obstacle>>,
-    pub global_light: GlobalLight,
 }
 
 #[derive(StructOf, Serialize, Deserialize, Default)]
@@ -30,17 +31,22 @@ pub struct Waypoint {
     pub collider: Collider,
 }
 
-#[derive(Serialize, Deserialize, Default)]
-#[serde(default)]
+#[derive(Serialize, Deserialize)]
 struct LevelSerde {
-    pub waypoints: Vec<Waypoint>,
-    pub obstacles: Vec<Obstacle>,
+    pub spawn_point: vec2<Coord>,
+    #[serde(default)]
     pub global_light: GlobalLight,
+    #[serde(default)]
+    pub waypoints: Vec<Waypoint>,
+    #[serde(default)]
+    pub obstacles: Vec<Obstacle>,
 }
 
 impl From<Level> for LevelSerde {
     fn from(level: Level) -> Self {
         Self {
+            spawn_point: level.spawn_point,
+            global_light: level.global_light,
             waypoints: level
                 .waypoints
                 .inner
@@ -53,7 +59,6 @@ impl From<Level> for LevelSerde {
                 .into_iter()
                 .map(|(_, item)| item)
                 .collect(),
-            global_light: level.global_light,
         }
     }
 }
@@ -71,9 +76,10 @@ impl From<LevelSerde> for Level {
         }
 
         Self {
+            spawn_point: level.spawn_point,
+            global_light: level.global_light,
             waypoints,
             obstacles,
-            global_light: level.global_light,
         }
     }
 }

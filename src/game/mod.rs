@@ -81,7 +81,8 @@ impl geng::State for Game {
     fn update(&mut self, delta_time: f64) {
         let delta_time = Time::new(delta_time as f32);
         let player_control = self.get_player_control();
-        self.world.update(player_control, delta_time);
+        self.world
+            .update(player_control, r32(self.player_visibilty), delta_time);
     }
 
     fn ui<'a>(&'a mut self, _cx: &'a geng::ui::Controller) -> Box<dyn geng::ui::Widget + 'a> {
@@ -101,6 +102,22 @@ impl geng::State for Game {
         .align(vec2(0.0, 0.0))
         .padding_left(framebuffer_size.y as f64 * 0.1);
 
-        geng::ui::stack![visibility].boxed()
+        let color = Rgba::lerp(
+            Rgba::RED,
+            Rgba::GREEN,
+            self.world.player.health.as_f32() / 100.0,
+        );
+        let health = geng::ui::Text::new(
+            format!("Health: {:.0}", self.world.player.health.as_f32()),
+            self.geng.default_font(),
+            30.0,
+            color,
+        )
+        .align(vec2(0.5, 0.5))
+        .fixed_size(framebuffer_size.map(|x| x.into()) * 0.1)
+        .align(vec2(0.0, 0.0))
+        .padding_left(framebuffer_size.y as f64 * 0.1);
+
+        geng::ui::stack![visibility, health].boxed()
     }
 }
