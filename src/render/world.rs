@@ -1,3 +1,5 @@
+use crate::assets::Texture;
+
 use super::*;
 
 pub struct WorldRender {
@@ -21,6 +23,22 @@ impl WorldRender {
         normal_framebuffer: &mut ugli::Framebuffer,
     ) {
         self.draw_obstacles(world, framebuffer, normal_framebuffer);
+        self.draw_player(world, framebuffer, normal_framebuffer);
+    }
+
+    pub fn draw_player(
+        &mut self,
+        world: &World,
+        framebuffer: &mut ugli::Framebuffer,
+        normal_framebuffer: &mut ugli::Framebuffer,
+    ) {
+        self.draw_simple(
+            &world.player.collider,
+            &self.assets.sprites.bike,
+            &world.camera,
+            framebuffer,
+            normal_framebuffer,
+        );
     }
 
     pub fn draw_obstacles(
@@ -42,34 +60,50 @@ impl WorldRender {
                 // Car
                 &self.assets.sprites.car
             };
+            self.draw_simple(
+                item.collider,
+                texture,
+                &world.camera,
+                framebuffer,
+                normal_framebuffer,
+            );
+        }
+    }
 
-            let vertices = collider_geometry(item.collider);
-            let vertices = ugli::VertexBuffer::new_dynamic(self.geng.ugli(), vertices);
+    pub fn draw_simple(
+        &self,
+        collider: &Collider,
+        texture: &Texture,
+        camera: &Camera2d,
+        framebuffer: &mut ugli::Framebuffer,
+        normal_framebuffer: &mut ugli::Framebuffer,
+    ) {
+        let vertices = collider_geometry(collider);
+        let vertices = ugli::VertexBuffer::new_dynamic(self.geng.ugli(), vertices);
 
+        draw_simple(
+            &vertices,
+            ugli::uniforms! {
+                u_model_matrix: mat3::identity(),
+                u_color: Rgba::WHITE,
+                u_texture: texture.texture(),
+            },
+            camera,
+            &self.assets.shaders.texture,
+            framebuffer,
+        );
+        if let Some(texture) = texture.normal() {
             draw_simple(
                 &vertices,
                 ugli::uniforms! {
                     u_model_matrix: mat3::identity(),
-                    u_color: Rgba::WHITE,
-                    u_texture: texture.texture(),
+                    u_normal_influence: 1.0,
+                    u_normal_texture: texture,
                 },
-                &world.camera,
-                &self.assets.shaders.texture,
-                framebuffer,
+                camera,
+                &self.assets.shaders.normal_texture,
+                normal_framebuffer,
             );
-            if let Some(texture) = texture.normal() {
-                draw_simple(
-                    &vertices,
-                    ugli::uniforms! {
-                        u_model_matrix: mat3::identity(),
-                        u_normal_influence: 1.0,
-                        u_normal_texture: texture,
-                    },
-                    &world.camera,
-                    &self.assets.shaders.normal_texture,
-                    normal_framebuffer,
-                );
-            }
         }
     }
 

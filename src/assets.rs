@@ -28,6 +28,7 @@ pub struct Shaders {
 #[derive(geng::Load)]
 pub struct Sprites {
     pub car: Texture,
+    pub bike: Texture,
 }
 
 impl Texture {
