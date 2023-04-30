@@ -62,6 +62,7 @@ impl GameRender {
 
         // Hitboxes
         if draw_hitboxes {
+            self.world.draw_paths(world, framebuffer);
             self.world.draw_hitboxes(world, framebuffer);
         }
 

@@ -22,6 +22,31 @@ impl WorldRender {
     ) {
     }
 
+    pub fn draw_paths(&mut self, world: &World, framebuffer: &mut ugli::Framebuffer) {
+        #[derive(StructQuery)]
+        struct PathRef<'a> {
+            #[query(component = "Option<Path>")]
+            path: &'a Path,
+        }
+        for item in query_path_ref!(world.level.obstacles).values() {
+            let mut points = item
+                .path
+                .points
+                .iter()
+                .map(|(_, point)| point.map(Coord::as_f32))
+                .collect::<Vec<_>>();
+            if let Some(&point) = points.first() {
+                points.push(point);
+            }
+            let chain = Chain::new(points);
+            self.geng.draw2d().draw2d(
+                framebuffer,
+                &world.camera,
+                &draw2d::Chain::new(chain, 0.1, Rgba::new(0.4, 0.4, 0.4, 0.5), 2),
+            );
+        }
+    }
+
     pub fn draw_hitboxes(&mut self, world: &World, framebuffer: &mut ugli::Framebuffer) {
         #[derive(StructQuery)]
         struct ColliderRef<'a> {

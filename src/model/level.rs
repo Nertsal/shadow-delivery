@@ -14,6 +14,14 @@ pub struct Obstacle {
     pub collider: Collider,
     /// In relative coordinates.
     pub lights: Vec<Spotlight>,
+    pub path: Option<Path>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Default)]
+#[serde(default)]
+pub struct Path {
+    pub points: Vec<vec2<Coord>>,
+    pub next_point: usize,
 }
 
 #[derive(StructOf, Serialize, Deserialize, Default)]
@@ -24,7 +32,7 @@ pub struct Waypoint {
 
 #[derive(Serialize, Deserialize, Default)]
 #[serde(default)]
-pub struct LevelSerde {
+struct LevelSerde {
     pub waypoints: Vec<Waypoint>,
     pub obstacles: Vec<Obstacle>,
     pub global_light: GlobalLight,
