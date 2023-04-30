@@ -10,6 +10,7 @@ impl World {
         self.control_player(player_control, delta_time);
         self.movement(delta_time);
         self.collisions();
+        self.waypoints();
     }
 
     fn control_player(&mut self, control: PlayerControl, delta_time: Time) {
@@ -38,7 +39,6 @@ impl World {
         }
 
         let player = &mut self.player;
-
         for obstacle in query_obstacle_ref!(self.level.obstacles).values() {
             if let Some(collision) = player.collider.collide(obstacle.collider) {
                 player
@@ -49,6 +49,24 @@ impl World {
                     * vec2::dot(player.velocity, collision.normal)
                     * (Coord::ONE + bounciness);
             }
+        }
+    }
+
+    fn waypoints(&mut self) {
+        #[derive(StructQuery)]
+        struct WaypointRef<'a> {
+            collider: &'a Collider,
+        }
+
+        let player = &mut self.player;
+        let mut hits = query_waypoint_ref!(self.level.waypoints)
+            .iter()
+            .filter(|(_, waypoint)| player.collider.check(waypoint.collider))
+            .map(|(id, _)| id)
+            .collect::<Vec<_>>();
+        hits.sort();
+        for id in hits.into_iter().rev() {
+            self.level.waypoints.remove(id);
         }
     }
 }
