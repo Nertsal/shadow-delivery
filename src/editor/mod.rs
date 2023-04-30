@@ -1,14 +1,16 @@
 use std::path::PathBuf;
 
-use crate::{
-    model::*,
-    render::{EditorRender, RenderCache},
-};
+use crate::{model::*, render::RenderCache};
 
 use super::*;
 
+mod render;
+
+use render::*;
+
 pub struct Editor {
     geng: Geng,
+    #[allow(dead_code)]
     assets: Rc<Assets>,
     render: EditorRender,
     render_cache: RenderCache,
@@ -17,21 +19,23 @@ pub struct Editor {
     level_path: PathBuf,
     mode: EditorMode,
     drag: Option<Drag>,
+    cursor_pos: vec2<Coord>,
 }
 
-pub struct Drag {
-    pub from: vec2<Coord>,
-    pub target: DragTarget,
+struct Drag {
+    from: vec2<Coord>,
+    target: DragTarget,
 }
 
-pub enum DragTarget {
+enum DragTarget {
     Spawn,
     Waypoint(usize),
     Obstacle(usize),
+    NewObstacle,
 }
 
 #[derive(Debug, Clone, Copy)]
-pub enum EditorMode {
+enum EditorMode {
     Spawn,
     Waypoint,
     Obstacle,
@@ -50,6 +54,7 @@ impl Editor {
             level_path,
             mode: EditorMode::Spawn,
             drag: None,
+            cursor_pos: vec2::ZERO,
         }
     }
 
@@ -80,11 +85,29 @@ impl Editor {
                 from: world_pos,
                 target,
             });
+            return;
+        }
+
+        match self.mode {
+            EditorMode::Spawn => {}
+            EditorMode::Waypoint => {
+                let aabb = Aabb2::point(world_pos).extend_uniform(Coord::new(0.25));
+                self.world.level.waypoints.insert(Waypoint {
+                    collider: Collider::new(aabb),
+                });
+            }
+            EditorMode::Obstacle => {
+                self.drag = Some(Drag {
+                    from: world_pos,
+                    target: DragTarget::NewObstacle,
+                });
+            }
         }
     }
 
     fn update_cursor(&mut self, position: vec2<f64>) {
         let world_pos = self.screen_to_world(position);
+        self.cursor_pos = world_pos;
 
         if let Some(drag) = &mut self.drag {
             match drag.target {
@@ -109,13 +132,21 @@ impl Editor {
                         .unwrap()
                         .teleport(world_pos);
                 }
+                _ => {}
             }
         }
     }
 
     fn release(&mut self) {
         if let Some(drag) = self.drag.take() {
-            // TODO
+            if let DragTarget::NewObstacle = drag.target {
+                let aabb = Aabb2::from_corners(drag.from, self.cursor_pos);
+                self.world.level.obstacles.insert(Obstacle {
+                    collider: Collider::new(aabb),
+                    lights: default(),
+                    path: default(),
+                });
+            }
         }
     }
 
@@ -158,8 +189,7 @@ impl geng::State for Editor {
     fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
         self.framebuffer_size = framebuffer.size();
         ugli::clear(framebuffer, Some(Rgba::BLACK), None, None);
-        self.render
-            .draw(&self.world, &self.mode, &self.render_cache, framebuffer);
+        self.draw(framebuffer);
 
         let framebuffer_size = framebuffer.size().map(|x| x as f32);
         self.geng.draw2d().draw2d(
