@@ -8,7 +8,8 @@ const PLAYER_ACCELERATION: f32 = 10.0;
 impl World {
     pub fn update(&mut self, player_control: PlayerControl, delta_time: Time) {
         self.control_player(player_control, delta_time);
-        self.movement(delta_time);
+        self.obstacles_movement(delta_time);
+        self.player_movement(delta_time);
         self.collisions();
         self.waypoints();
     }
@@ -27,7 +28,42 @@ impl World {
             .clamp_len(..=Coord::new(PLAYER_ACCELERATION) * delta_time);
     }
 
-    fn movement(&mut self, delta_time: Time) {
+    fn obstacles_movement(&mut self, delta_time: Time) {
+        #[derive(StructQuery)]
+        struct ObstacleRef<'a> {
+            collider: &'a mut Collider,
+            #[query(component = "Option<Path>")]
+            path: &'a mut Path,
+        }
+        let mut query = query_obstacle_ref!(self.level.obstacles);
+        let mut iter = query.iter_mut();
+        while let Some((_, item)) = iter.next() {
+            let Some(&target) = item.path.points.get(item.path.next_point) else {
+                item.path.next_point = 0;
+                continue;
+            };
+
+            let speed = Coord::new(5.0);
+            let angular_speed = Coord::new(1.0);
+
+            let mut delta = target - item.collider.pos();
+            let len = delta.len();
+            let max_len = speed * delta_time;
+            if len > max_len {
+                delta *= max_len / len;
+            } else {
+                item.path.next_point += 1;
+            }
+
+            let target_angle = delta.arg();
+            let angle_delta = target_angle - item.collider.rotation;
+
+            item.collider.translate(delta);
+            item.collider.rotate(angle_delta);
+        }
+    }
+
+    fn player_movement(&mut self, delta_time: Time) {
         let delta = self.player.velocity * delta_time;
         self.player.collider.translate(delta);
     }
