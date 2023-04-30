@@ -13,6 +13,7 @@ pub struct Collision {
     pub penetration: Coord,
 }
 
+#[allow(dead_code)]
 impl Collider {
     pub fn new(aabb: Aabb2<Coord>) -> Self {
         Self {

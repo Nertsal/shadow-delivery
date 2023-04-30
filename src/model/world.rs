@@ -25,7 +25,7 @@ impl World {
     pub fn calculate_light_geometry(
         &self,
         geng: &Geng,
-        assets: &Assets,
+        _assets: &Assets,
     ) -> ugli::VertexBuffer<render::NormalVertex> {
         let vertices = self
             .level

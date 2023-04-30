@@ -2,6 +2,7 @@ use super::*;
 
 pub struct WorldRender {
     geng: Geng,
+    #[allow(dead_code)]
     assets: Rc<Assets>,
 }
 
@@ -15,9 +16,9 @@ impl WorldRender {
 
     pub fn draw(
         &mut self,
-        world: &World,
-        framebuffer: &mut ugli::Framebuffer,
-        normal_framebuffer: &mut ugli::Framebuffer,
+        _world: &World,
+        _framebuffer: &mut ugli::Framebuffer,
+        _normal_framebuffer: &mut ugli::Framebuffer,
     ) {
     }
 

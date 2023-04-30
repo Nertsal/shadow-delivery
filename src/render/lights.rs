@@ -218,32 +218,32 @@ impl LightsRender {
         }
     }
 
-    pub fn render_normal_map(
-        &mut self,
-        camera: &Camera2d,
-        geometry: &ugli::VertexBuffer<NormalVertex>,
-    ) {
-        let mut normal_framebuffer = attach_texture(&mut self.buffers.normal_texture, &self.geng);
-        let framebuffer_size = normal_framebuffer.size().map(|x| x as f32);
+    // pub fn render_normal_map(
+    //     &mut self,
+    //     camera: &Camera2d,
+    //     geometry: &ugli::VertexBuffer<NormalVertex>,
+    // ) {
+    //     let mut normal_framebuffer = attach_texture(&mut self.buffers.normal_texture, &self.geng);
+    //     let framebuffer_size = normal_framebuffer.size().map(|x| x as f32);
 
-        ugli::draw(
-            &mut normal_framebuffer,
-            &self.assets.shaders.normal_map,
-            ugli::DrawMode::Triangles,
-            geometry,
-            (
-                ugli::uniforms! {
-                    u_model_matrix: mat3::identity(),
-                    u_normal_influence: 1.0,
-                },
-                camera.uniforms(framebuffer_size),
-            ),
-            ugli::DrawParameters {
-                blend_mode: Some(ugli::BlendMode::straight_alpha()),
-                ..Default::default()
-            },
-        );
-    }
+    //     ugli::draw(
+    //         &mut normal_framebuffer,
+    //         &self.assets.shaders.normal_map,
+    //         ugli::DrawMode::Triangles,
+    //         geometry,
+    //         (
+    //             ugli::uniforms! {
+    //                 u_model_matrix: mat3::identity(),
+    //                 u_normal_influence: 1.0,
+    //             },
+    //             camera.uniforms(framebuffer_size),
+    //         ),
+    //         ugli::DrawParameters {
+    //             blend_mode: Some(ugli::BlendMode::straight_alpha()),
+    //             ..Default::default()
+    //         },
+    //     );
+    // }
 }
 
 impl Buffers {

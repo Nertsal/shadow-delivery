@@ -12,6 +12,7 @@ const KEYS_RIGHT: [geng::Key; 2] = [geng::Key::D, geng::Key::Right];
 
 pub struct Game {
     geng: Geng,
+    #[allow(dead_code)]
     assets: Rc<Assets>,
     render: GameRender,
     render_cache: RenderCache,
@@ -83,7 +84,7 @@ impl geng::State for Game {
         self.world.update(player_control, delta_time);
     }
 
-    fn ui<'a>(&'a mut self, cx: &'a geng::ui::Controller) -> Box<dyn geng::ui::Widget + 'a> {
+    fn ui<'a>(&'a mut self, _cx: &'a geng::ui::Controller) -> Box<dyn geng::ui::Widget + 'a> {
         use geng::ui::*;
 
         let framebuffer_size = self.framebuffer_size.map(|x| x as f32);
