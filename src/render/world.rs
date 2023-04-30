@@ -16,10 +16,61 @@ impl WorldRender {
 
     pub fn draw(
         &mut self,
-        _world: &World,
-        _framebuffer: &mut ugli::Framebuffer,
-        _normal_framebuffer: &mut ugli::Framebuffer,
+        world: &World,
+        framebuffer: &mut ugli::Framebuffer,
+        normal_framebuffer: &mut ugli::Framebuffer,
     ) {
+        self.draw_obstacles(world, framebuffer, normal_framebuffer);
+    }
+
+    pub fn draw_obstacles(
+        &mut self,
+        world: &World,
+        framebuffer: &mut ugli::Framebuffer,
+        normal_framebuffer: &mut ugli::Framebuffer,
+    ) {
+        #[derive(StructQuery)]
+        struct ObstacleRef<'a> {
+            collider: &'a Collider,
+            lights: &'a Vec<Spotlight>,
+        }
+        for item in query_obstacle_ref!(world.level.obstacles).values() {
+            let texture = if item.lights.is_empty() {
+                // House
+                continue;
+            } else {
+                // Car
+                &self.assets.sprites.car
+            };
+
+            let vertices = collider_geometry(item.collider);
+            let vertices = ugli::VertexBuffer::new_dynamic(self.geng.ugli(), vertices);
+
+            draw_simple(
+                &vertices,
+                ugli::uniforms! {
+                    u_model_matrix: mat3::identity(),
+                    u_color: Rgba::WHITE,
+                    u_texture: texture.texture(),
+                },
+                &world.camera,
+                &self.assets.shaders.texture,
+                framebuffer,
+            );
+            if let Some(texture) = texture.normal() {
+                draw_simple(
+                    &vertices,
+                    ugli::uniforms! {
+                        u_model_matrix: mat3::identity(),
+                        u_normal_influence: 1.0,
+                        u_normal_texture: texture,
+                    },
+                    &world.camera,
+                    &self.assets.shaders.normal_texture,
+                    normal_framebuffer,
+                );
+            }
+        }
     }
 
     pub fn draw_paths(&mut self, world: &World, framebuffer: &mut ugli::Framebuffer) {

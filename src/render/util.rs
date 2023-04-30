@@ -34,3 +34,39 @@ pub fn draw_collider(
             .translate(center),
     );
 }
+
+pub fn collider_geometry(collider: &Collider) -> Vec<Vertex> {
+    let uvs = [(0, 0), (1, 0), (1, 1), (0, 1)].map(|(x, y)| vec2(x as f32, y as f32));
+    collider
+        .vertices()
+        .into_iter()
+        .zip(uvs)
+        .map(|(pos, uv)| Vertex {
+            a_pos: pos.map(Coord::as_f32),
+            a_uv: uv,
+        })
+        .collect()
+}
+
+pub fn draw_simple(
+    vertices: impl ugli::VertexDataSource,
+    uniforms: impl ugli::Uniforms,
+    camera: &impl geng::AbstractCamera2d,
+    program: &ugli::Program,
+    framebuffer: &mut ugli::Framebuffer,
+) {
+    ugli::draw(
+        framebuffer,
+        program,
+        ugli::DrawMode::TriangleFan,
+        vertices,
+        (
+            uniforms,
+            camera.uniforms(framebuffer.size().map(|x| x as f32)),
+        ),
+        ugli::DrawParameters {
+            blend_mode: Some(ugli::BlendMode::straight_alpha()),
+            ..default()
+        },
+    )
+}
