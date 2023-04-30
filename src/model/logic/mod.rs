@@ -15,7 +15,8 @@ impl World {
     }
 
     fn control_player(&mut self, control: PlayerControl, delta_time: Time) {
-        self.player.collider.rotation += control.turn * Coord::new(PLAYER_TURN_SPEED) * delta_time;
+        self.player.collider.rotation +=
+            Angle::new_radians(control.turn.as_f32() * PLAYER_TURN_SPEED * delta_time.as_f32());
 
         let mut speed = self.player.velocity.len();
         speed -= speed * Coord::new(1.0 - PLAYER_DRAG) * delta_time;
@@ -23,7 +24,13 @@ impl World {
             speed + control.accelerate * Coord::new(PLAYER_ACCELERATION) * delta_time;
         speed = target_speed.clamp(Coord::ZERO, Coord::new(PLAYER_MAX_SPEED));
 
-        let target_velocity = vec2::UNIT_X.rotate(self.player.collider.rotation) * speed;
+        let target_velocity = self
+            .player
+            .collider
+            .rotation
+            .unit_direction()
+            .map(Coord::new)
+            * speed;
         self.player.velocity += (target_velocity - self.player.velocity)
             .clamp_len(..=Coord::new(PLAYER_ACCELERATION) * delta_time);
     }
@@ -44,22 +51,23 @@ impl World {
             };
 
             let speed = Coord::new(5.0);
-            let angular_speed = Coord::new(1.0);
+            let angular_speed = Coord::new(2.0);
 
-            let mut delta = target - item.collider.pos();
+            let delta = target - item.collider.pos();
             let len = delta.len();
             let max_len = speed * delta_time;
-            if len > max_len {
-                delta *= max_len / len;
-            } else {
+            if len < max_len {
                 item.path.next_point += 1;
             }
 
-            let target_angle = delta.arg();
-            let angle_delta = target_angle - item.collider.rotation;
+            let target_angle = Angle::new_radians(delta.arg().as_f32());
+            let angle_delta = (target_angle - item.collider.rotation)
+                .clamp_abs(Angle::new_radians((angular_speed * delta_time).as_f32()));
 
-            item.collider.translate(delta);
-            item.collider.rotate(angle_delta);
+            item.collider.rotation += angle_delta;
+            item.collider.translate(
+                item.collider.rotation.unit_direction().map(Coord::new) * speed * delta_time,
+            );
         }
     }
 

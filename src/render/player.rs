@@ -28,7 +28,7 @@ impl PlayerRender {
         };
 
         let collider = &world.player.collider;
-        let rotation = collider.rotation.as_f32();
+        let rotation = collider.rotation.as_radians();
         let collider = collider.raw().map(Coord::as_f32);
         let center = collider.center();
         let matrix = mat3::translate(center) * mat3::rotate(rotation) * mat3::translate(-center);

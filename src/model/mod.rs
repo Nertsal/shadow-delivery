@@ -1,11 +1,13 @@
 use super::*;
 
+mod angle;
 mod collider;
 mod level;
 mod lights;
 mod logic;
 mod world;
 
+pub use angle::*;
 pub use collider::*;
 pub use level::*;
 pub use lights::*;

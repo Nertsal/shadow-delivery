@@ -121,8 +121,12 @@ impl LightsRender {
                 .map(|(_, light)| (light, obstacle.collider.rotation, obstacle.collider.pos()))
         });
         for (spotlight, rotation, offset) in spotlights {
-            let light_pos = (spotlight.position.rotate(rotation) + offset).map(Coord::as_f32);
-            let light_angle = spotlight.angle + rotation.as_f32();
+            let light_pos = spotlight
+                .position
+                .map(Coord::as_f32)
+                .rotate(rotation.as_radians())
+                + offset.map(Coord::as_f32);
+            let light_angle = spotlight.angle + rotation.as_radians();
 
             // Using `world_texture` here but it is not actually used by the shader
             let mut light_framebuffer = ugli::Framebuffer::new(

@@ -4,7 +4,7 @@ use super::*;
 #[serde(default)]
 pub struct Collider {
     aabb: Aabb2<Coord>,
-    pub rotation: Coord,
+    pub rotation: Angle,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -18,7 +18,7 @@ impl Collider {
     pub fn new(aabb: Aabb2<Coord>) -> Self {
         Self {
             aabb,
-            rotation: Coord::ZERO,
+            rotation: Angle::ZERO,
         }
     }
 
@@ -26,7 +26,7 @@ impl Collider {
         let center = self.aabb.center();
         self.aabb
             .corners()
-            .map(|p| (p - center).rotate(self.rotation) + center)
+            .map(|p| (p - center).rotate(Coord::new(self.rotation.as_radians())) + center)
     }
 
     pub fn shape(&self) -> impl parry2d::shape::Shape {
@@ -47,10 +47,6 @@ impl Collider {
 
     pub fn size(&self) -> vec2<Coord> {
         self.aabb.size()
-    }
-
-    pub fn rotate(&mut self, delta: Coord) {
-        self.rotation += delta;
     }
 
     pub fn teleport(&mut self, position: vec2<Coord>) {
@@ -85,7 +81,7 @@ impl Default for Collider {
     fn default() -> Self {
         Self {
             aabb: Aabb2::ZERO.extend_uniform(Coord::ONE),
-            rotation: Coord::ZERO,
+            rotation: Angle::ZERO,
         }
     }
 }
