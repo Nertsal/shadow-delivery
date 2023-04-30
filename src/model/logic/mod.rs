@@ -1,5 +1,7 @@
 use super::*;
 
+const CAMERA_INTERPOLATION: f32 = 0.5;
+
 const WAYPOINT_DISTANCE_MIN: f32 = 5.0;
 const WAYPOINT_DISTANCE_MAX: f32 = 20.0;
 
@@ -27,6 +29,7 @@ impl World {
         self.player_movement(delta_time);
         self.collisions();
         self.waypoints();
+        self.update_camera(delta_time);
     }
 
     fn update_player(&mut self, visibility: R32, delta_time: Time) {
@@ -192,5 +195,13 @@ impl World {
 
         let next = next.or_else(|| self.level.waypoints.ids().choose(&mut rng));
         self.active_waypoint = next.unwrap_or(0);
+    }
+
+    fn update_camera(&mut self, delta_time: Time) {
+        let target = self.player.collider.pos();
+        self.camera.center += ((target - self.camera.center.map(Coord::new))
+            / Coord::new(CAMERA_INTERPOLATION)
+            * delta_time)
+            .map(Coord::as_f32);
     }
 }
