@@ -31,7 +31,7 @@ pub struct Obstacle {
 
 pub struct Player {
     pub collider: Collider,
-    pub speed: Coord,
+    pub velocity: vec2<Coord>,
 }
 
 pub struct PlayerControl {
@@ -49,7 +49,7 @@ impl World {
         Self {
             player: Player {
                 collider: Collider::new(Aabb2::ZERO.extend_symmetric(PLAYER_SIZE.map(Coord::new))),
-                speed: Coord::ZERO,
+                velocity: vec2::ZERO,
             },
             obstacles,
             camera: Camera2d {
