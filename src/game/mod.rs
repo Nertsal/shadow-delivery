@@ -5,6 +5,8 @@ use crate::{
 
 use super::*;
 
+mod ui;
+
 const KEYS_ACC: [geng::Key; 2] = [geng::Key::W, geng::Key::Up];
 const KEYS_DEC: [geng::Key; 2] = [geng::Key::S, geng::Key::Down];
 const KEYS_LEFT: [geng::Key; 2] = [geng::Key::A, geng::Key::Left];
@@ -12,19 +14,20 @@ const KEYS_RIGHT: [geng::Key; 2] = [geng::Key::D, geng::Key::Right];
 
 pub struct Game {
     geng: Geng,
-    #[allow(dead_code)]
     assets: Rc<Assets>,
     render: GameRender,
     render_cache: RenderCache,
     framebuffer_size: vec2<usize>,
     world: World,
+    level: Level,
     draw_hitboxes: bool,
     player_visibilty: f32,
+    reset: bool,
 }
 
 impl Game {
     pub fn new(geng: &Geng, assets: &Rc<Assets>, level: Level) -> Self {
-        let world = World::new(assets, level);
+        let world = World::new(assets, level.clone());
         Self {
             geng: geng.clone(),
             assets: assets.clone(),
@@ -32,9 +35,16 @@ impl Game {
             render_cache: RenderCache::calculate(&world, geng, assets),
             framebuffer_size: vec2(1, 1),
             world,
+            level,
             draw_hitboxes: cfg!(debug_assertions),
             player_visibilty: 0.0,
+            reset: false,
         }
+    }
+
+    fn reset(&mut self) {
+        self.world = World::new(&self.assets, self.level.clone());
+        self.reset = false;
     }
 
     fn get_player_control(&mut self) -> PlayerControl {
@@ -79,55 +89,18 @@ impl geng::State for Game {
     }
 
     fn update(&mut self, delta_time: f64) {
+        if self.reset {
+            self.reset();
+        }
+
         let delta_time = Time::new(delta_time as f32);
         let player_control = self.get_player_control();
         self.world
             .update(player_control, r32(self.player_visibilty), delta_time);
     }
 
-    fn ui<'a>(&'a mut self, _cx: &'a geng::ui::Controller) -> Box<dyn geng::ui::Widget + 'a> {
-        use geng::ui::*;
-
-        let framebuffer_size = self.framebuffer_size.map(|x| x as f32);
-
-        let color = Rgba::lerp(Rgba::GREEN, Rgba::RED, self.player_visibilty);
-        let visibility = geng::ui::Text::new(
-            format!("Visibility: {:.0}%", self.player_visibilty * 100.0),
-            self.geng.default_font(),
-            30.0,
-            color,
-        )
-        .align(vec2(0.5, 0.9))
-        .fixed_size(framebuffer_size.map(|x| x.into()) * 0.1)
-        .align(vec2(0.0, 0.0))
-        .padding_left(framebuffer_size.y as f64 * 0.1);
-
-        let color = Rgba::lerp(
-            Rgba::RED,
-            Rgba::GREEN,
-            self.world.player.health.as_f32() / 100.0,
-        );
-        let health = geng::ui::Text::new(
-            format!("Health: {:.0}", self.world.player.health.as_f32()),
-            self.geng.default_font(),
-            30.0,
-            color,
-        )
-        .align(vec2(0.5, 0.5))
-        .fixed_size(framebuffer_size.map(|x| x.into()) * 0.1)
-        .align(vec2(0.0, 0.0))
-        .padding_left(framebuffer_size.y as f64 * 0.1);
-
-        let score = geng::ui::Text::new(
-            format!("Score: {}", self.world.player.score),
-            self.geng.default_font(),
-            50.0,
-            Rgba::WHITE,
-        )
-        .fixed_size(framebuffer_size.map(|x| x.into()) * 0.1)
-        .align(vec2(0.5, 1.0));
-
-        geng::ui::stack![visibility, health, score].boxed()
+    fn ui<'a>(&'a mut self, cx: &'a geng::ui::Controller) -> Box<dyn geng::ui::Widget + 'a> {
+        self.ui(cx)
     }
 }
 
