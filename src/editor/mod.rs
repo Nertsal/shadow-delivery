@@ -310,6 +310,21 @@ impl geng::State for Editor {
             .align_bounding_box(vec2(0.0, 1.0))
             .translate(vec2(0.05, 0.95) * framebuffer_size),
         );
+        self.geng.draw2d().draw2d(
+            framebuffer,
+            &geng::PixelPerfectCamera,
+            &draw2d::Text::unit(
+                &**self.geng.default_font(),
+                format!(
+                    "Cursor: ({:.1}, {:.1})",
+                    self.cursor_pos.x, self.cursor_pos.y
+                ),
+                Rgba::WHITE,
+            )
+            .scale_uniform(20.0)
+            .align_bounding_box(vec2(1.0, 1.0))
+            .translate(vec2(0.95, 0.95) * framebuffer_size),
+        );
     }
 
     fn update(&mut self, delta_time: f64) {
