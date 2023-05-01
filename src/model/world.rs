@@ -15,7 +15,9 @@ impl World {
                 shadow_bonus: true,
                 score: 0,
                 health: Health::new(100.0),
-                collider: Collider::new(Aabb2::ZERO.extend_symmetric(PLAYER_SIZE.map(Coord::new))),
+                collider: Collider::new(
+                    Aabb2::point(level.spawn_point).extend_symmetric(PLAYER_SIZE.map(Coord::new)),
+                ),
                 velocity: vec2::ZERO,
             },
             active_waypoint: 0,

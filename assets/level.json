@@ -1,7 +1,7 @@
 {
   "spawn_point": [
-    0.0,
-    0.0
+    -16.16292,
+    -6.432228
   ],
   "global_light": {
     "color": "#ffffff",
@@ -255,6 +255,76 @@
       "collider": {
         "aabb": {
           "min": [
+            -8.5,
+            23.0
+          ],
+          "max": [
+            -8.0,
+            23.5
+          ]
+        },
+        "rotation": 0.0
+      },
+      "lights": [
+        {
+          "position": [
+            0.25,
+            0.0
+          ],
+          "angle": 0.0,
+          "angle_range": 2.0,
+          "angle_gradient": 1.0,
+          "color": "#ffffff",
+          "intensity": 0.5,
+          "max_distance": 5.0,
+          "distance_gradient": 1.0,
+          "volume": 0.5
+        }
+      ],
+      "path": {
+        "next_point": 0,
+        "angular_speed": 10.0,
+        "move_speed": 5.0,
+        "points": [
+          [
+            -6.0,
+            21.0
+          ],
+          [
+            -11.0,
+            12.0
+          ],
+          [
+            -11.0,
+            -12.0
+          ],
+          [
+            -10.0,
+            -6.0
+          ],
+          [
+            -10.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            12.0
+          ],
+          [
+            -10.0,
+            21.0
+          ]
+        ]
+      }
+    },
+    {
+      "collider": {
+        "aabb": {
+          "min": [
             39.230377,
             -39.742558
           ],
@@ -374,11 +444,11 @@
             0.3
           ],
           "angle": 0.0,
-          "angle_range": 1.0,
+          "angle_range": 1.5,
           "angle_gradient": 1.0,
           "color": "#ffffff",
           "intensity": 0.5,
-          "max_distance": 5.0,
+          "max_distance": 10.0,
           "distance_gradient": 1.0,
           "volume": 0.5
         },
@@ -388,11 +458,11 @@
             -0.3
           ],
           "angle": 0.0,
-          "angle_range": 1.0,
+          "angle_range": 1.5,
           "angle_gradient": 1.0,
           "color": "#ffffff",
           "intensity": 0.5,
-          "max_distance": 5.0,
+          "max_distance": 10.0,
           "distance_gradient": 1.0,
           "volume": 0.5
         }
@@ -466,7 +536,7 @@
             0.25
           ],
           "angle": 1.57,
-          "angle_range": 1.2,
+          "angle_range": 1.5,
           "angle_gradient": 1.0,
           "color": "#ffffff",
           "intensity": 0.5,
@@ -480,7 +550,7 @@
             -0.25
           ],
           "angle": -1.57,
-          "angle_range": 1.2,
+          "angle_range": 1.5,
           "angle_gradient": 1.0,
           "color": "#ffffff",
           "intensity": 0.5,
@@ -526,11 +596,11 @@
             0.6
           ],
           "angle": 0.0,
-          "angle_range": 0.7,
+          "angle_range": 1.5,
           "angle_gradient": 1.0,
           "color": "#ffffff",
           "intensity": 0.5,
-          "max_distance": 5.0,
+          "max_distance": 10.0,
           "distance_gradient": 1.0,
           "volume": 0.5
         },
@@ -540,11 +610,11 @@
             -0.6
           ],
           "angle": 0.0,
-          "angle_range": 0.7,
+          "angle_range": 1.5,
           "angle_gradient": 1.0,
           "color": "#ffffff",
           "intensity": 0.5,
-          "max_distance": 5.0,
+          "max_distance": 10.0,
           "distance_gradient": 1.0,
           "volume": 0.5
         }
@@ -594,11 +664,11 @@
             0.3
           ],
           "angle": 0.0,
-          "angle_range": 0.7,
+          "angle_range": 1.0,
           "angle_gradient": 1.0,
           "color": "#ffffff",
           "intensity": 0.5,
-          "max_distance": 5.0,
+          "max_distance": 7.0,
           "distance_gradient": 1.0,
           "volume": 0.5
         },
@@ -608,11 +678,11 @@
             -0.3
           ],
           "angle": 0.0,
-          "angle_range": 0.7,
+          "angle_range": 1.0,
           "angle_gradient": 1.0,
           "color": "#ffffff",
           "intensity": 0.5,
-          "max_distance": 5.0,
+          "max_distance": 7.0,
           "distance_gradient": 1.0,
           "volume": 0.5
         }
