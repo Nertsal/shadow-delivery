@@ -142,6 +142,34 @@ impl GameRender {
 
             // Render
             let framebuffer_size = framebuffer.size().map(|x| x as f32);
+            let unit_geometry = ugli::VertexBuffer::new_dynamic(self.geng.ugli(), unit_quad());
+
+            // World
+            {
+                let pos = world.player.collider.pos().map(Coord::as_f32);
+                let scale = 3.0;
+                let matrix = mat3::translate(pos) * mat3::scale_uniform(scale / 2.0);
+                ugli::draw(
+                    framebuffer,
+                    &self.assets.shaders.visibility,
+                    ugli::DrawMode::TriangleFan,
+                    &unit_geometry,
+                    (
+                        ugli::uniforms! {
+                            u_model_matrix: matrix,
+                            u_texture: &self.player_texture,
+                            u_alpha: 0.9,
+                        },
+                        world.camera.uniforms(framebuffer_size),
+                    ),
+                    ugli::DrawParameters {
+                        blend_mode: Some(ugli::BlendMode::straight_alpha()),
+                        ..default()
+                    },
+                );
+            }
+
+            // UI
             let size = 0.2 * framebuffer_size.y;
             let aabb =
                 Aabb2::point(vec2(0.1, 0.1) * framebuffer_size).extend_positive(vec2(size, size));
@@ -150,24 +178,17 @@ impl GameRender {
                 &geng::PixelPerfectCamera,
                 &draw2d::Ellipse::circle(aabb.center(), size / 2.0, PLAYER_BACKGROUND_COLOR),
             );
-
-            let geometry = [(-1, -1), (1, -1), (1, 1), (-1, 1)]
-                .into_iter()
-                .map(|(x, y)| draw2d::Vertex {
-                    a_pos: vec2(x as f32, y as f32),
-                })
-                .collect();
-            let geometry = ugli::VertexBuffer::new_dynamic(self.geng.ugli(), geometry);
             let matrix = mat3::translate(aabb.center()) * mat3::scale(aabb.size() / 2.0);
             ugli::draw(
                 framebuffer,
                 &self.assets.shaders.visibility,
                 ugli::DrawMode::TriangleFan,
-                &geometry,
+                &unit_geometry,
                 (
                     ugli::uniforms! {
                         u_model_matrix: matrix,
-                        u_visibility_texture: &self.player_texture,
+                        u_texture: &self.player_texture,
+                        u_alpha: 1.0,
                     },
                     geng::PixelPerfectCamera.uniforms(framebuffer_size),
                 ),

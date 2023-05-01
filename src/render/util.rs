@@ -35,6 +35,17 @@ pub fn draw_collider(
     );
 }
 
+pub fn unit_quad() -> Vec<Vertex> {
+    [(0, 0), (1, 0), (1, 1), (0, 1)]
+        .into_iter()
+        .map(|(x, y)| {
+            let a_uv = vec2(x as f32, y as f32);
+            let a_pos = a_uv * 2.0 - vec2(1.0, 1.0);
+            Vertex { a_pos, a_uv }
+        })
+        .collect()
+}
+
 pub fn collider_geometry(collider: &Collider) -> Vec<Vertex> {
     let uvs = [(0, 0), (1, 0), (1, 1), (0, 1)].map(|(x, y)| vec2(x as f32, y as f32));
     collider
