@@ -18,6 +18,7 @@ pub struct Texture {
 pub struct Sounds {
     pub bounce: geng::Sound,
     pub hurt: geng::Sound,
+    pub deliver: geng::Sound,
 }
 
 #[derive(geng::Load)]

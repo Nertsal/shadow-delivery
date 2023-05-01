@@ -270,6 +270,7 @@ impl World {
             }
             player.shadow_bonus = true;
             self.next_waypoint();
+            self.assets.sounds.deliver.play();
         }
     }
 
