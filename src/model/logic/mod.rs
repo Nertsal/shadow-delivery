@@ -8,7 +8,7 @@ const WAYPOINT_DISTANCE_MAX: f32 = 20.0;
 const DEATH_PENALTY: Score = 1000;
 const DELIVER_SCORE: Score = 500;
 const SHADOW_BONUS: Score = 1000;
-const SHADOW_MAX_VIS: f32 = 0.1;
+const SHADOW_MAX_VIS: f32 = 0.05;
 
 const HEALTH_RESTORE: f32 = 10.0;
 const PLAYER_DRAG: f32 = 0.2;
@@ -66,25 +66,26 @@ impl World {
                 .min(Health::new(100.0));
         }
 
-        if visibility.as_f32() > SHADOW_MAX_VIS {
-            self.player.shadow_bonus = false;
+        if visibility.as_f32() < SHADOW_MAX_VIS {
+            return;
+        }
+        self.player.shadow_bonus = false;
 
-            // Particles
-            let p = f64::from(visibility.as_f32()) * 0.5;
-            let mut rng = thread_rng();
-            if rng.gen_bool(p) {
-                let position = rng.gen_circle(self.player.collider.pos(), Coord::new(0.1));
-                let speed = 1.0;
-                let angle = rng.gen_range(0.0..f32::PI * 2.0);
-                let velocity = (Angle::new_radians(angle).unit_direction() * speed).map(Coord::new);
-                self.particles.insert(Particle {
-                    position,
-                    velocity,
-                    lifetime: Time::new(0.5),
-                    radius: Coord::new(0.1),
-                    color: Rgba::WHITE,
-                });
-            }
+        // Particles
+        let p = f64::from(visibility.as_f32()) * 0.5;
+        let mut rng = thread_rng();
+        if rng.gen_bool(p) {
+            let position = rng.gen_circle(self.player.collider.pos(), Coord::new(0.1));
+            let speed = 1.0;
+            let angle = rng.gen_range(0.0..f32::PI * 2.0);
+            let velocity = (Angle::new_radians(angle).unit_direction() * speed).map(Coord::new);
+            self.particles.insert(Particle {
+                position,
+                velocity,
+                lifetime: Time::new(0.5),
+                radius: Coord::new(0.1),
+                color: Rgba::WHITE,
+            });
         }
 
         self.player.health =
