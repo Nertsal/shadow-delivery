@@ -26,7 +26,9 @@ impl Editor {
             .world
             .draw(&self.world, &mut world_framebuffer, &mut normal_framebuffer);
         // Lights
-        // self.render.lights.render_normal_map(&self.world.camera, &self.cache.normal_geometry);
+        self.render
+            .lights
+            .render_normal_map(&self.world.camera, &self.render_cache.normal_geometry);
         let geometry = ugli::VertexBuffer::new_dynamic(
             self.geng.ugli(),
             self.render_cache.light_geometry.clone(),

@@ -58,7 +58,8 @@ impl GameRender {
             self.world
                 .draw(world, &mut world_framebuffer, &mut normal_framebuffer);
             // Lights
-            // self.lights.render_normal_map(&world.camera, &cache.normal_geometry);
+            self.lights
+                .render_normal_map(&world.camera, &cache.normal_geometry);
             let geometry = cache
                 .light_geometry
                 .as_slice()
