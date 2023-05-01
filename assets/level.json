@@ -272,7 +272,7 @@
             0.0
           ],
           "angle": 0.0,
-          "angle_range": 2.0,
+          "angle_range": 1.6,
           "angle_gradient": 1.0,
           "color": "#ffffff",
           "intensity": 0.5,
