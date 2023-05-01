@@ -63,11 +63,24 @@ pub struct Obstacle {
     pub path: Option<Path>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Path {
-    pub points: Vec<vec2<Coord>>,
     pub next_point: usize,
+    pub angular_speed: R32,
+    pub move_speed: Coord,
+    pub points: Vec<vec2<Coord>>,
+}
+
+impl Default for Path {
+    fn default() -> Self {
+        Self {
+            next_point: 0,
+            angular_speed: r32(5.0),
+            move_speed: Coord::new(5.0),
+            points: default(),
+        }
+    }
 }
 
 #[derive(StructOf, Serialize, Deserialize, Default)]

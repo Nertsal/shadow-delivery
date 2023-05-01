@@ -168,8 +168,8 @@ impl World {
                 continue;
             };
 
-            let speed = Coord::new(5.0);
-            let angular_speed = Coord::new(5.0);
+            let speed = item.path.move_speed;
+            let angular_speed = item.path.angular_speed;
 
             let delta = target - item.collider.pos();
             let len = delta.len();
@@ -179,8 +179,9 @@ impl World {
             }
 
             let target_angle = Angle::new_radians(delta.arg().as_f32());
-            let angle_delta = (target_angle - item.collider.rotation)
-                .clamp_abs(Angle::new_radians((angular_speed * delta_time).as_f32()));
+            let max_delta =
+                Angle::new_radians((angular_speed * delta_time).as_f32().clamp_abs(f32::PI));
+            let angle_delta = (target_angle - item.collider.rotation).clamp_abs(max_delta);
 
             item.collider.rotation += angle_delta;
             item.collider.translate(
