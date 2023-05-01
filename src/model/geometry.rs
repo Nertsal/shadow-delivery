@@ -7,7 +7,7 @@ impl World {
             collider: &'a Collider,
             path: &'a Option<Path>,
         }
-        query_obstacle_ref!(self.obstacles)
+        query_obstacle_ref!(self.level.obstacles)
             .iter()
             .filter(|(_, item)| item.path.is_none())
             .flat_map(|(_, item)| collider_light_geometry(item.collider))
