@@ -10,7 +10,7 @@ const DELIVER_SCORE: Score = 500;
 const SHADOW_BONUS: Score = 1000;
 const SHADOW_MAX_VIS: f32 = 0.05;
 
-const HEALTH_RESTORE: f32 = 10.0;
+// const HEALTH_RESTORE: f32 = 10.0;
 const PLAYER_DRAG: f32 = 0.2;
 const PLAYER_MAX_SPEED: f32 = 5.0;
 const PLAYER_TURN_SPEED: f32 = 3.0;
@@ -89,10 +89,10 @@ impl World {
     }
 
     fn update_player(&mut self, visibility: R32, delta_time: Time) {
-        if visibility == R32::ZERO {
-            self.player.health = (self.player.health + Health::new(HEALTH_RESTORE) * delta_time)
-                .min(Health::new(100.0));
-        }
+        // if visibility == R32::ZERO {
+        //     self.player.health = (self.player.health + Health::new(HEALTH_RESTORE) * delta_time)
+        //         .min(Health::new(100.0));
+        // }
 
         if visibility.as_f32() < SHADOW_MAX_VIS {
             return;
