@@ -9,6 +9,7 @@ pub struct Collider {
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Collision {
+    pub point: vec2<Coord>,
     pub normal: vec2<Coord>,
     pub penetration: Coord,
 }
@@ -69,7 +70,9 @@ impl Collider {
             .unwrap()
             .map(|contact| {
                 let normal = contact.normal1.into_inner();
+                let point = contact.point1;
                 Collision {
+                    point: vec2(point.x, point.y).map(Coord::new),
                     normal: vec2(normal.x, normal.y).map(Coord::new),
                     penetration: Coord::new(-contact.dist),
                 }

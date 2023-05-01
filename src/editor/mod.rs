@@ -51,7 +51,7 @@ enum EditorMode {
 
 impl Editor {
     pub fn new(geng: &Geng, assets: &Rc<Assets>, level: Level, level_path: PathBuf) -> Self {
-        let world = World::new(level);
+        let world = World::new(assets, level);
         Self {
             geng: geng.clone(),
             assets: assets.clone(),

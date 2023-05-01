@@ -203,6 +203,9 @@ impl World {
             collider: &'a Collider,
         }
 
+        let bounced = self.bounced;
+        self.bounced = false;
+
         let player = &mut self.player;
         for obstacle in query_obstacle_ref!(self.level.obstacles).values() {
             if let Some(collision) = player.collider.collide(obstacle.collider) {
@@ -213,6 +216,26 @@ impl World {
                 player.velocity -= collision.normal
                     * vec2::dot(player.velocity, collision.normal)
                     * (Coord::ONE + bounciness);
+
+                if !bounced {
+                    self.assets.sounds.bounce.play();
+
+                    let mut rng = thread_rng();
+                    for _ in 0..3 {
+                        let position = collision.point;
+                        let speed = 1.0;
+                        let angle = Coord::new(rng.gen_range(-1.0..1.0));
+                        let velocity = -collision.normal.rotate(angle) * Coord::new(speed);
+                        self.particles.insert(Particle {
+                            position,
+                            velocity,
+                            lifetime: Time::new(0.5),
+                            radius: Coord::new(0.1),
+                            color: Rgba::WHITE,
+                        });
+                    }
+                }
+                self.bounced = true;
             }
         }
     }

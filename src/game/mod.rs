@@ -24,7 +24,7 @@ pub struct Game {
 
 impl Game {
     pub fn new(geng: &Geng, assets: &Rc<Assets>, level: Level) -> Self {
-        let world = World::new(level);
+        let world = World::new(assets, level);
         Self {
             geng: geng.clone(),
             assets: assets.clone(),

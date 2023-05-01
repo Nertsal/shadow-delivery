@@ -4,6 +4,7 @@ use super::*;
 pub struct Assets {
     pub shaders: Shaders,
     pub sprites: Sprites,
+    pub sounds: Sounds,
 }
 
 #[derive(Deref)]
@@ -11,6 +12,11 @@ pub struct Texture {
     #[deref]
     texture: Rc<ugli::Texture>,
     normal: Option<Rc<ugli::Texture>>,
+}
+
+#[derive(geng::Load)]
+pub struct Sounds {
+    pub bounce: geng::Sound,
 }
 
 #[derive(geng::Load)]
