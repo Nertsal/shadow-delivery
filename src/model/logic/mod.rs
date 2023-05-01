@@ -2,6 +2,7 @@ use super::*;
 
 const CAMERA_INTERPOLATION: f32 = 0.5;
 
+const OBSTACLE_SPAWN_DISTANCE_MIN: f32 = 15.0;
 const WAYPOINT_DISTANCE_MIN: f32 = 5.0;
 const WAYPOINT_DISTANCE_MAX: f32 = 20.0;
 
@@ -25,6 +26,7 @@ impl World {
     ) {
         self.time += delta_time;
 
+        self.update_difficulty(delta_time);
         self.update_particles(delta_time);
         self.update_player(player_visibility, delta_time);
         self.control_player(player_control, delta_time);
@@ -34,6 +36,25 @@ impl World {
         self.waypoints();
         self.update_lamps(delta_time);
         self.update_camera(delta_time);
+    }
+
+    fn update_difficulty(&mut self, _delta_time: Time) {
+        let mut new = Vec::new();
+        for (id, obstacle) in self.level.obstacles.iter() {
+            let delta = obstacle.collider.pos() - self.player.collider.pos();
+            let distance = delta.len();
+            if *obstacle.difficulty == 0
+                || *obstacle.difficulty <= self.player.score
+                    && distance.as_f32() > OBSTACLE_SPAWN_DISTANCE_MIN
+            {
+                new.push(id);
+            }
+        }
+        new.sort();
+        for id in new.into_iter().rev() {
+            let obstacle = self.level.obstacles.remove(id).unwrap();
+            self.obstacles.insert(obstacle);
+        }
     }
 
     fn update_lamps(&mut self, delta_time: Time) {
@@ -170,7 +191,7 @@ impl World {
             #[query(component = "Option<Path>")]
             path: &'a mut Path,
         }
-        let mut query = query_obstacle_ref!(self.level.obstacles);
+        let mut query = query_obstacle_ref!(self.obstacles);
         let mut iter = query.iter_mut();
         while let Some((_, item)) = iter.next() {
             let Some(&target) = item.path.points.get(item.path.next_point) else {
@@ -215,7 +236,7 @@ impl World {
         self.bounced = false;
 
         let player = &mut self.player;
-        for obstacle in query_obstacle_ref!(self.level.obstacles).values() {
+        for obstacle in query_obstacle_ref!(self.obstacles).values() {
             if let Some(collision) = player.collider.collide(obstacle.collider) {
                 player
                     .collider

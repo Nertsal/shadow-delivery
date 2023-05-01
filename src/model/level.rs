@@ -57,6 +57,7 @@ impl Default for LampState {
 #[derive(StructOf, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct Obstacle {
+    pub difficulty: Score,
     pub collider: Collider,
     /// In relative coordinates.
     pub lights: Vec<Spotlight>,

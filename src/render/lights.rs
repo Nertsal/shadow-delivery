@@ -141,7 +141,6 @@ impl LightsRender {
         });
 
         let spotlights = world
-            .level
             .obstacles
             .iter()
             .flat_map(|(_, obstacle)| {

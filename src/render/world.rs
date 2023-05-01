@@ -172,7 +172,7 @@ impl WorldRender {
             lights: &'a Vec<Spotlight>,
         }
         let unit_geometry = ugli::VertexBuffer::new_dynamic(self.geng.ugli(), unit_quad());
-        for item in query_obstacle_ref!(world.level.obstacles).values() {
+        for item in query_obstacle_ref!(world.obstacles).values() {
             let texture = if item.lights.is_empty() {
                 // Building
                 let scale_matrix = mat3::scale(item.collider.size().map(Coord::as_f32) / 2.0);
@@ -278,7 +278,7 @@ impl WorldRender {
             #[query(component = "Option<Path>")]
             path: &'a Path,
         }
-        for item in query_path_ref!(world.level.obstacles).values() {
+        for item in query_path_ref!(world.obstacles).values() {
             let mut points = item
                 .path
                 .points
@@ -303,7 +303,7 @@ impl WorldRender {
             collider: &'a Collider,
         }
 
-        let obstacles = query_collider_ref!(world.level.obstacles);
+        let obstacles = query_collider_ref!(world.obstacles);
         let waypoints = query_collider_ref!(world.level.waypoints);
         let colliders = obstacles
             .values()

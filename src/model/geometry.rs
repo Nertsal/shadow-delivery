@@ -7,7 +7,7 @@ impl World {
             collider: &'a Collider,
             path: &'a Option<Path>,
         }
-        query_obstacle_ref!(self.level.obstacles)
+        query_obstacle_ref!(self.obstacles)
             .iter()
             .filter(|(_, item)| item.path.is_none())
             .flat_map(|(_, item)| collider_light_geometry(item.collider))
@@ -20,7 +20,7 @@ impl World {
             collider: &'a Collider,
             path: &'a Option<Path>,
         }
-        query_obstacle_ref!(self.level.obstacles)
+        query_obstacle_ref!(self.obstacles)
             .iter()
             .filter(|(_, item)| item.path.is_some())
             .flat_map(|(_, item)| collider_light_geometry(item.collider))
@@ -39,7 +39,7 @@ impl World {
         }
         let normals = [(-1, -1), (1, -1), (1, 1), (-1, 1)]
             .map(|(x, y)| vec2(x as f32, y as f32).normalize() * 0.3);
-        let query = query_obstacle_ref!(self.level.obstacles);
+        let query = query_obstacle_ref!(self.obstacles);
         let geometry = query
             .values()
             .filter(|item| item.path.is_none())

@@ -18,6 +18,8 @@ impl EditorRender {
 
 impl Editor {
     pub fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
+        self.world.obstacles = self.world.level.obstacles.clone();
+
         // Lighting
         let (mut world_framebuffer, mut normal_framebuffer) =
             self.render.lights.start_render(Rgba::BLACK, framebuffer);

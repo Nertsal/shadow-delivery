@@ -235,8 +235,7 @@ impl Editor {
                     let aabb = Aabb2::from_corners(drag.from, self.cursor_pos);
                     self.world.level.obstacles.insert(Obstacle {
                         collider: Collider::new(aabb),
-                        lights: default(),
-                        path: default(),
+                        ..default()
                     });
                 }
                 DragTarget::NewProp(prop) => {
