@@ -64,6 +64,17 @@ impl GameRender {
             .collect();
         let geometry = ugli::VertexBuffer::new_dynamic(self.geng.ugli(), geometry);
         self.lights.render_lights(world, &world.camera, &geometry);
+        let player_light = Spotlight {
+            color: Rgba::opaque(0.8, 0.8, 1.0),
+            position: world.player.collider.pos(),
+            angle_range: f32::PI * 2.0,
+            max_distance: Coord::new(3.0),
+            volume: 0.2,
+            intensity: 0.1,
+            ..default()
+        };
+        self.lights
+            .render_spotlight(&player_light, true, &world.camera, &geometry);
         // Finish
         self.lights.finish(framebuffer);
 

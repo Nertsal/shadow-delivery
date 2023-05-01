@@ -132,106 +132,116 @@ impl LightsRender {
                     .map(|(_, lamp)| (lamp.light, *lamp.collider)),
             )
             .map(|(light, collider)| (light, collider.rotation, collider.pos()));
-        for (spotlight, rotation, offset) in spotlights {
-            let light_pos = spotlight
-                .position
-                .map(Coord::as_f32)
-                .rotate(rotation.as_radians())
-                + offset.map(Coord::as_f32);
-            let light_angle = spotlight.angle + rotation.as_radians();
-
-            // Using `world_texture` here but it is not actually used by the shader
-            let mut light_framebuffer = ugli::Framebuffer::new(
-                self.geng.ugli(),
-                ugli::ColorAttachment::Texture(&mut self.buffers.world_texture),
-                ugli::DepthAttachment::RenderbufferWithStencil(&mut self.buffers.shadow_stencil),
-            );
-            let framebuffer_size = light_framebuffer.size().map(|x| x as f32);
-            ugli::clear(&mut light_framebuffer, None, None, Some(0));
-
-            // Cast shadow
-            ugli::draw(
-                &mut light_framebuffer,
-                &self.assets.shaders.point_light_shadow_map,
-                ugli::DrawMode::Triangles,
-                geometry,
-                (
-                    ugli::uniforms! {
-                        u_model_matrix: mat3::identity(),
-                        u_light_pos: light_pos,
-                    },
-                    camera.uniforms(framebuffer_size),
-                ),
-                ugli::DrawParameters {
-                    // Just in case the shader writes something in the texture,
-                    // discard it during blending.
-                    blend_mode: Some(ugli::BlendMode::combined(ugli::ChannelBlendMode {
-                        src_factor: ugli::BlendFactor::Zero,
-                        dst_factor: ugli::BlendFactor::One,
-                        equation: ugli::BlendEquation::Add,
-                    })),
-                    // Increment the shadow casters count
-                    stencil_mode: Some(ugli::StencilMode::always(ugli::FaceStencilMode {
-                        test: ugli::StencilTest {
-                            condition: ugli::Condition::Always,
-                            reference: 0,
-                            mask: 0xFF,
-                        },
-                        op: ugli::StencilOp::always(ugli::StencilOpFunc::Increment),
-                    })),
-                    ..Default::default()
-                },
-            );
-
-            // Render the world for that light
-            let mut world_framebuffer = ugli::Framebuffer::new(
-                self.geng.ugli(),
-                ugli::ColorAttachment::Texture(&mut self.buffers.postprocess_texture),
-                ugli::DepthAttachment::RenderbufferWithStencil(&mut self.buffers.shadow_stencil),
-            );
-            let framebuffer_size = world_framebuffer.size().map(|x| x as f32);
-            ugli::draw(
-                &mut world_framebuffer,
-                &self.assets.shaders.spotlight,
-                ugli::DrawMode::TriangleFan,
-                &self.buffers.quad_geometry,
-                (
-                    ugli::uniforms! {
-                        u_model_matrix: mat3::identity(),
-                        u_light_pos: light_pos,
-                        u_light_angle: light_angle,
-                        u_light_angle_range: spotlight.angle_range,
-                        u_light_angle_gradient: spotlight.angle_gradient,
-                        u_light_color: spotlight.color,
-                        u_light_intensity: spotlight.intensity,
-                        u_light_max_distance: spotlight.max_distance.as_f32(),
-                        u_light_distance_gradient: spotlight.distance_gradient,
-                        u_light_volume: if volumetric { spotlight.volume } else { 0.0 },
-                        u_normal_texture: &self.buffers.normal_texture,
-                        u_source_texture: &self.buffers.world_texture,
-                        u_framebuffer_size: self.buffers.normal_texture.size(),
-                    },
-                    camera.uniforms(framebuffer_size),
-                ),
-                ugli::DrawParameters {
-                    blend_mode: Some(ugli::BlendMode::combined(ugli::ChannelBlendMode {
-                        src_factor: ugli::BlendFactor::One,
-                        dst_factor: ugli::BlendFactor::One,
-                        equation: ugli::BlendEquation::Add,
-                    })),
-                    // Ignore the parts in shadow
-                    stencil_mode: Some(ugli::StencilMode::always(ugli::FaceStencilMode {
-                        test: ugli::StencilTest {
-                            condition: ugli::Condition::Equal,
-                            reference: 0, // 0 shadow casters means the point is lit up.
-                            mask: 0xFF,
-                        },
-                        op: ugli::StencilOp::always(ugli::StencilOpFunc::Keep),
-                    })),
-                    ..Default::default()
-                },
-            );
+        for (&spotlight, rotation, offset) in spotlights {
+            let position = spotlight.position.rotate(Coord::new(rotation.as_radians())) + offset;
+            let angle = spotlight.angle + rotation.as_radians();
+            let spotlight = Spotlight {
+                position,
+                angle,
+                ..spotlight
+            };
+            self.render_spotlight(&spotlight, volumetric, camera, geometry);
         }
+    }
+
+    pub fn render_spotlight(
+        &mut self,
+        spotlight: &Spotlight,
+        volumetric: bool,
+        camera: &Camera2d,
+        geometry: &ugli::VertexBuffer<NormalVertex>,
+    ) {
+        // Using `world_texture` here but it is not actually used by the shader
+        let mut light_framebuffer = ugli::Framebuffer::new(
+            self.geng.ugli(),
+            ugli::ColorAttachment::Texture(&mut self.buffers.world_texture),
+            ugli::DepthAttachment::RenderbufferWithStencil(&mut self.buffers.shadow_stencil),
+        );
+        let framebuffer_size = light_framebuffer.size().map(|x| x as f32);
+        ugli::clear(&mut light_framebuffer, None, None, Some(0));
+
+        // Cast shadow
+        ugli::draw(
+            &mut light_framebuffer,
+            &self.assets.shaders.point_light_shadow_map,
+            ugli::DrawMode::Triangles,
+            geometry,
+            (
+                ugli::uniforms! {
+                    u_model_matrix: mat3::identity(),
+                    u_light_pos: spotlight.position.map(Coord::as_f32),
+                },
+                camera.uniforms(framebuffer_size),
+            ),
+            ugli::DrawParameters {
+                // Just in case the shader writes something in the texture,
+                // discard it during blending.
+                blend_mode: Some(ugli::BlendMode::combined(ugli::ChannelBlendMode {
+                    src_factor: ugli::BlendFactor::Zero,
+                    dst_factor: ugli::BlendFactor::One,
+                    equation: ugli::BlendEquation::Add,
+                })),
+                // Increment the shadow casters count
+                stencil_mode: Some(ugli::StencilMode::always(ugli::FaceStencilMode {
+                    test: ugli::StencilTest {
+                        condition: ugli::Condition::Always,
+                        reference: 0,
+                        mask: 0xFF,
+                    },
+                    op: ugli::StencilOp::always(ugli::StencilOpFunc::Increment),
+                })),
+                ..Default::default()
+            },
+        );
+
+        // Render the world for that light
+        let mut world_framebuffer = ugli::Framebuffer::new(
+            self.geng.ugli(),
+            ugli::ColorAttachment::Texture(&mut self.buffers.postprocess_texture),
+            ugli::DepthAttachment::RenderbufferWithStencil(&mut self.buffers.shadow_stencil),
+        );
+        let framebuffer_size = world_framebuffer.size().map(|x| x as f32);
+        ugli::draw(
+            &mut world_framebuffer,
+            &self.assets.shaders.spotlight,
+            ugli::DrawMode::TriangleFan,
+            &self.buffers.quad_geometry,
+            (
+                ugli::uniforms! {
+                    u_model_matrix: mat3::identity(),
+                    u_light_pos: spotlight.position.map(Coord::as_f32),
+                    u_light_angle: spotlight.angle,
+                    u_light_angle_range: spotlight.angle_range,
+                    u_light_angle_gradient: spotlight.angle_gradient,
+                    u_light_color: spotlight.color,
+                    u_light_intensity: spotlight.intensity,
+                    u_light_max_distance: spotlight.max_distance.as_f32(),
+                    u_light_distance_gradient: spotlight.distance_gradient,
+                    u_light_volume: if volumetric { spotlight.volume } else { 0.0 },
+                    u_normal_texture: &self.buffers.normal_texture,
+                    u_source_texture: &self.buffers.world_texture,
+                    u_framebuffer_size: self.buffers.normal_texture.size(),
+                },
+                camera.uniforms(framebuffer_size),
+            ),
+            ugli::DrawParameters {
+                blend_mode: Some(ugli::BlendMode::combined(ugli::ChannelBlendMode {
+                    src_factor: ugli::BlendFactor::One,
+                    dst_factor: ugli::BlendFactor::One,
+                    equation: ugli::BlendEquation::Add,
+                })),
+                // Ignore the parts in shadow
+                stencil_mode: Some(ugli::StencilMode::always(ugli::FaceStencilMode {
+                    test: ugli::StencilTest {
+                        condition: ugli::Condition::Equal,
+                        reference: 0, // 0 shadow casters means the point is lit up.
+                        mask: 0xFF,
+                    },
+                    op: ugli::StencilOp::always(ugli::StencilOpFunc::Keep),
+                })),
+                ..Default::default()
+            },
+        );
     }
 
     // pub fn render_normal_map(
