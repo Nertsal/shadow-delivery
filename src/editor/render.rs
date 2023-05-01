@@ -69,19 +69,49 @@ impl Editor {
             }
             EditorMode::Obstacle => {}
             EditorMode::Lamp => {}
+            EditorMode::Prop(prop) => {
+                if let Some(prop) = self.props.get(prop) {
+                    let framebuffer_size = framebuffer.size().map(|x| x as f32);
+                    self.geng.draw2d().draw2d(
+                        framebuffer,
+                        &geng::PixelPerfectCamera,
+                        &draw2d::Text::unit(
+                            &**self.geng.default_font(),
+                            format!("Prop: {prop}"),
+                            Rgba::WHITE,
+                        )
+                        .scale_uniform(20.0)
+                        .align_bounding_box(vec2(0.0, 1.0))
+                        .translate(vec2(0.05, 0.85) * framebuffer_size),
+                    );
+                }
+            }
         }
 
         if let Some(drag) = &self.drag {
-            if let DragTarget::NewObstacle = drag.target {
-                let aabb = Aabb2::from_corners(drag.from, self.cursor_pos);
-                let collider = Collider::new(aabb);
-                draw_collider(
-                    &collider,
-                    Rgba::new(0.4, 0.4, 0.4, 0.5),
-                    &self.geng,
-                    framebuffer,
-                    &self.world.camera,
-                );
+            match drag.target {
+                DragTarget::NewObstacle => {
+                    let aabb = Aabb2::from_corners(drag.from, self.cursor_pos);
+                    let collider = Collider::new(aabb);
+                    draw_collider(
+                        &collider,
+                        Rgba::new(0.4, 0.4, 0.4, 0.5),
+                        &self.geng,
+                        framebuffer,
+                        &self.world.camera,
+                    );
+                }
+                DragTarget::NewProp(prop) => {
+                    let prop = self.props.get(prop).unwrap();
+                    let texture = self.assets.sprites.props.get(prop).unwrap();
+                    let aabb = Aabb2::from_corners(drag.from, self.cursor_pos).map(Coord::as_f32);
+                    self.geng.draw2d().draw2d(
+                        framebuffer,
+                        &self.world.camera,
+                        &draw2d::TexturedQuad::new(aabb, texture.texture()),
+                    );
+                }
+                _ => (),
             }
         }
     }

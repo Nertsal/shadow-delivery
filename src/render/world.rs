@@ -22,11 +22,35 @@ impl WorldRender {
         framebuffer: &mut ugli::Framebuffer,
         normal_framebuffer: &mut ugli::Framebuffer,
     ) {
+        self.draw_props(world, framebuffer, normal_framebuffer);
         self.draw_obstacles(world, framebuffer, normal_framebuffer);
         self.draw_lamps(world, framebuffer, normal_framebuffer);
         self.draw_waypoints(world, framebuffer, normal_framebuffer);
         self.draw_player(world, framebuffer, normal_framebuffer);
         self.draw_particles(world, framebuffer, normal_framebuffer);
+    }
+
+    pub fn draw_props(
+        &mut self,
+        world: &World,
+        framebuffer: &mut ugli::Framebuffer,
+        normal_framebuffer: &mut ugli::Framebuffer,
+    ) {
+        #[derive(StructQuery)]
+        struct PropRef<'a> {
+            collider: &'a Collider,
+            prop: &'a PropType,
+        }
+        for item in query_prop_ref!(world.level.props).values() {
+            let texture = self.assets.sprites.props.get(item.prop).unwrap();
+            self.draw_simple(
+                item.collider,
+                texture,
+                &world.camera,
+                framebuffer,
+                normal_framebuffer,
+            );
+        }
     }
 
     pub fn draw_particles(

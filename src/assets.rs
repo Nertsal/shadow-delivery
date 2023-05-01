@@ -28,11 +28,26 @@ pub struct Shaders {
 
 #[derive(geng::Load)]
 pub struct Sprites {
+    pub props: Props,
     pub car: Texture,
     pub wall: Texture,
     pub bike: Texture,
     pub target: Texture,
     pub lamp: Texture,
+}
+
+#[derive(geng::Load)]
+pub struct Props {
+    pub road: Texture,
+}
+
+impl Props {
+    pub fn get(&self, prop: &model::PropType) -> Option<&Texture> {
+        match prop.as_str() {
+            "road" => Some(&self.road),
+            _ => None,
+        }
+    }
 }
 
 impl Texture {

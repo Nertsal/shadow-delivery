@@ -21,6 +21,7 @@ pub struct Editor {
     mode: EditorMode,
     drag: Option<Drag>,
     cursor_pos: vec2<Coord>,
+    props: Vec<PropType>,
 }
 
 struct Drag {
@@ -33,7 +34,9 @@ enum DragTarget {
     Waypoint(usize),
     Obstacle(usize),
     Lamp(usize),
+    Prop(usize),
     NewObstacle,
+    NewProp(usize),
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -42,6 +45,7 @@ enum EditorMode {
     Waypoint,
     Obstacle,
     Lamp,
+    Prop(usize),
 }
 
 impl Editor {
@@ -58,6 +62,7 @@ impl Editor {
             mode: EditorMode::Spawn,
             drag: None,
             cursor_pos: vec2::ZERO,
+            props: ["road"].into_iter().map(String::from).collect(),
         }
     }
 
@@ -99,6 +104,9 @@ impl Editor {
             DragTarget::Obstacle(id) => {
                 self.world.level.obstacles.remove(id);
             }
+            DragTarget::Prop(id) => {
+                self.world.level.props.remove(id);
+            }
             _ => {}
         }
     }
@@ -108,7 +116,7 @@ impl Editor {
 
         if let Some(target) = self.find_target(world_pos) {
             match button {
-                MouseButton::Left => {
+                MouseButton::Left if self.geng.window().is_key_pressed(geng::Key::LCtrl) => {
                     self.drag = Some(Drag {
                         from: world_pos,
                         target,
@@ -119,7 +127,7 @@ impl Editor {
                     self.remove(target);
                     return;
                 }
-                MouseButton::Middle => todo!(),
+                _ => {}
             }
         }
 
@@ -149,6 +157,12 @@ impl Editor {
                         angle_range: f32::PI * 2.0,
                         ..default()
                     },
+                });
+            }
+            EditorMode::Prop(prop) => {
+                self.drag = Some(Drag {
+                    from: world_pos,
+                    target: DragTarget::NewProp(prop),
                 });
             }
         }
@@ -190,6 +204,15 @@ impl Editor {
                         .unwrap()
                         .teleport(world_pos);
                 }
+                DragTarget::Prop(id) => {
+                    self.world
+                        .level
+                        .props
+                        .collider
+                        .get_mut(id)
+                        .unwrap()
+                        .teleport(world_pos);
+                }
                 _ => {}
             }
         }
@@ -197,13 +220,24 @@ impl Editor {
 
     fn release(&mut self) {
         if let Some(drag) = self.drag.take() {
-            if let DragTarget::NewObstacle = drag.target {
-                let aabb = Aabb2::from_corners(drag.from, self.cursor_pos);
-                self.world.level.obstacles.insert(Obstacle {
-                    collider: Collider::new(aabb),
-                    lights: default(),
-                    path: default(),
-                });
+            match drag.target {
+                DragTarget::NewObstacle => {
+                    let aabb = Aabb2::from_corners(drag.from, self.cursor_pos);
+                    self.world.level.obstacles.insert(Obstacle {
+                        collider: Collider::new(aabb),
+                        lights: default(),
+                        path: default(),
+                    });
+                }
+                DragTarget::NewProp(prop) => {
+                    let prop = self.props.get(prop).unwrap().clone();
+                    let aabb = Aabb2::from_corners(drag.from, self.cursor_pos);
+                    self.world.level.props.insert(Prop {
+                        collider: Collider::new(aabb),
+                        prop,
+                    });
+                }
+                _ => (),
             }
         }
     }
@@ -220,6 +254,7 @@ impl Editor {
         let waypoints = query_collider_ref!(self.world.level.waypoints);
         let obstacles = query_collider_ref!(self.world.level.obstacles);
         let lamps = query_collider_ref!(self.world.level.lamps);
+        let props = query_collider_ref!(self.world.level.props);
         let mut colliders = std::iter::once((
             DragTarget::Spawn,
             ColliderRef {
@@ -236,7 +271,8 @@ impl Editor {
                 .iter()
                 .map(|(id, item)| (DragTarget::Obstacle(id), item)),
         )
-        .chain(lamps.iter().map(|(id, item)| (DragTarget::Lamp(id), item)));
+        .chain(lamps.iter().map(|(id, item)| (DragTarget::Lamp(id), item)))
+        .chain(props.iter().map(|(id, item)| (DragTarget::Prop(id), item)));
 
         let target = Collider::new(Aabb2::point(position).extend_uniform(Coord::new(0.01)));
         colliders
@@ -311,6 +347,14 @@ impl geng::State for Editor {
                 }
                 geng::Key::Num4 => {
                     self.mode = EditorMode::Lamp;
+                }
+                geng::Key::Num5 => {
+                    let prop = if let EditorMode::Prop(prop) = self.mode {
+                        (prop + 1) % self.props.len()
+                    } else {
+                        0
+                    };
+                    self.mode = EditorMode::Prop(prop);
                 }
                 _ => {}
             },

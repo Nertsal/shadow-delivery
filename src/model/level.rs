@@ -8,6 +8,15 @@ pub struct Level {
     pub waypoints: StructOf<Vec<Waypoint>>,
     pub obstacles: StructOf<Vec<Obstacle>>,
     pub lamps: StructOf<Vec<Lamp>>,
+    pub props: StructOf<Vec<Prop>>,
+}
+
+pub type PropType = String;
+
+#[derive(StructOf, Serialize, Deserialize, Default)]
+pub struct Prop {
+    pub collider: Collider,
+    pub prop: PropType,
 }
 
 #[derive(StructOf, Serialize, Deserialize, Default)]
@@ -50,6 +59,8 @@ struct LevelSerde {
     pub obstacles: Vec<Obstacle>,
     #[serde(default)]
     pub lamps: Vec<Lamp>,
+    #[serde(default)]
+    pub props: Vec<Prop>,
 }
 
 impl From<Level> for LevelSerde {
@@ -75,6 +86,12 @@ impl From<Level> for LevelSerde {
                 .into_iter()
                 .map(|(_, item)| item)
                 .collect(),
+            props: level
+                .props
+                .inner
+                .into_iter()
+                .map(|(_, item)| item)
+                .collect(),
         }
     }
 }
@@ -96,12 +113,18 @@ impl From<LevelSerde> for Level {
             lamps.insert(item);
         }
 
+        let mut props = StructOf::<Vec<Prop>>::new();
+        for item in level.props {
+            props.insert(item);
+        }
+
         Self {
             spawn_point: level.spawn_point,
             global_light: level.global_light,
             waypoints,
             obstacles,
             lamps,
+            props,
         }
     }
 }
