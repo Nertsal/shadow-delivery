@@ -117,7 +117,7 @@ impl World {
         }
 
         self.player.health =
-            (self.player.health - visibility * Health::new(100.0) * delta_time).max(Health::ZERO);
+            (self.player.health - visibility * Health::new(200.0) * delta_time).max(Health::ZERO);
         if self.player.health <= Health::ZERO {
             self.kill_player();
         }
