@@ -69,7 +69,6 @@ impl World {
             position: &'a mut vec2<Coord>,
             velocity: &'a vec2<Coord>,
             lifetime: &'a mut Time,
-            radius: &'a mut Coord,
         }
         let mut dead = Vec::new();
         let mut query = query_particle_ref!(self.particles);
@@ -81,8 +80,6 @@ impl World {
                 continue;
             }
             *particle.position += *particle.velocity * delta_time;
-            let time = Time::new(0.2);
-            *particle.radius = (*particle.lifetime).min(time) / time * Coord::new(0.1);
         }
         dead.sort();
         for id in dead.into_iter().rev() {
@@ -115,6 +112,7 @@ impl World {
                 lifetime: Time::new(0.5),
                 radius: Coord::new(0.15),
                 color: Rgba::opaque(0.2, 0.8, 0.9),
+                text: None,
             });
 
             if self.hurt_sfx_timeout <= Time::ZERO {
@@ -242,6 +240,7 @@ impl World {
                             lifetime: Time::new(0.5),
                             radius: Coord::new(0.1),
                             color: Rgba::WHITE,
+                            text: None,
                         });
                     }
                 }
@@ -266,13 +265,26 @@ impl World {
         };
 
         if player.collider.check(active.collider) {
-            player.score += DELIVER_SCORE;
+            let mut score = DELIVER_SCORE;
             if player.shadow_bonus {
-                player.score += SHADOW_BONUS;
+                score += SHADOW_BONUS;
             }
+            player.score += score;
             player.shadow_bonus = true;
-            self.next_waypoint();
+
             self.assets.sounds.deliver.play();
+            let angle = Angle::new_radians(thread_rng().gen_range(1.47..1.77));
+            let velocity = (angle.unit_direction() * 0.5).map(Coord::new);
+            self.particles.insert(Particle {
+                position: active.collider.pos(),
+                velocity,
+                lifetime: Time::new(1.0),
+                radius: Coord::new(0.5),
+                color: Rgba::new(0.0, 0.8, 0.7, 0.7),
+                text: Some(format!("+{score}")),
+            });
+
+            self.next_waypoint();
         }
     }
 

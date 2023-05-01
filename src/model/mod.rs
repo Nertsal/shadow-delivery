@@ -42,4 +42,5 @@ pub struct Particle {
     pub lifetime: Time,
     pub radius: Coord,
     pub color: Color,
+    pub text: Option<String>,
 }

@@ -96,19 +96,30 @@ impl WorldRender {
         #[derive(StructQuery)]
         struct ParticleRef<'a> {
             position: &'a vec2<Coord>,
+            lifetime: &'a Time,
             radius: &'a Coord,
             color: &'a Color,
+            text: &'a Option<String>,
         }
         for particle in query_particle_ref!(world.particles).values() {
-            self.geng.draw2d().draw2d(
-                framebuffer,
-                &world.camera,
-                &draw2d::Ellipse::circle(
-                    particle.position.map(Coord::as_f32),
-                    particle.radius.as_f32(),
-                    *particle.color,
-                ),
-            );
+            let pos = particle.position.map(Coord::as_f32);
+            let time = Time::new(0.2);
+            let radius = ((*particle.lifetime).min(time) / time * *particle.radius).as_f32();
+            if let Some(text) = particle.text {
+                self.geng.draw2d().draw2d(
+                    framebuffer,
+                    &world.camera,
+                    &draw2d::Text::unit(&**self.geng.default_font(), text, *particle.color)
+                        .scale_uniform(radius)
+                        .translate(pos),
+                );
+            } else {
+                self.geng.draw2d().draw2d(
+                    framebuffer,
+                    &world.camera,
+                    &draw2d::Ellipse::circle(pos, radius, *particle.color),
+                );
+            }
         }
     }
 
