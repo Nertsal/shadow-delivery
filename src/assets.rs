@@ -39,12 +39,22 @@ pub struct Sprites {
 #[derive(geng::Load)]
 pub struct Props {
     pub road: Texture,
+    pub road_v: Texture,
+    pub road_ur: Texture,
+    pub road_ul: Texture,
+    pub road_rd: Texture,
+    pub road_dl: Texture,
 }
 
 impl Props {
     pub fn get(&self, prop: &model::PropType) -> Option<&Texture> {
         match prop.as_str() {
             "road" => Some(&self.road),
+            "road_v" => Some(&self.road_v),
+            "road_ur" => Some(&self.road_ur),
+            "road_ul" => Some(&self.road_ul),
+            "road_rd" => Some(&self.road_rd),
+            "road_dl" => Some(&self.road_dl),
             _ => None,
         }
     }
