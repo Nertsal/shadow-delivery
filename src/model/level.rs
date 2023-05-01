@@ -19,11 +19,39 @@ pub struct Prop {
     pub prop: PropType,
 }
 
-#[derive(StructOf, Serialize, Deserialize, Default)]
+#[derive(StructOf, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Lamp {
     pub collider: Collider,
     /// In relative coordinates.
     pub light: Spotlight,
+    pub state: LampState,
+    pub up_time: Time,
+    pub down_time: Time,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum LampState {
+    Up(Time),
+    Down(Time),
+}
+
+impl Default for Lamp {
+    fn default() -> Self {
+        Self {
+            collider: default(),
+            light: default(),
+            state: default(),
+            up_time: Time::ONE,
+            down_time: Time::ZERO,
+        }
+    }
+}
+
+impl Default for LampState {
+    fn default() -> Self {
+        Self::Down(Time::ZERO)
+    }
 }
 
 #[derive(StructOf, Serialize, Deserialize, Default)]

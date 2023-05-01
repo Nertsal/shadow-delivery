@@ -164,6 +164,9 @@ impl Editor {
                         angle_range: f32::PI * 2.0,
                         ..default()
                     },
+                    state: LampState::default(),
+                    up_time: Time::ONE,
+                    down_time: Time::ZERO,
                 });
             }
             EditorMode::Prop(prop) => {

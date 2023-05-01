@@ -114,6 +114,32 @@ impl LightsRender {
         camera: &Camera2d,
         geometry: &ugli::VertexBuffer<NormalVertex>,
     ) {
+        #[derive(StructQuery)]
+        struct LampRef<'a> {
+            collider: &'a Collider,
+            light: &'a Spotlight,
+            state: &'a LampState,
+            up_time: &'a Time,
+            down_time: &'a Time,
+        }
+        let lamps = query_lamp_ref!(world.level.lamps);
+        let lamps = lamps.iter().map(|(_, lamp)| {
+            let t = match *lamp.state {
+                LampState::Up(time) => (*lamp.up_time - time).as_f32(),
+                LampState::Down(time) => 1.0 - (*lamp.down_time - time).as_f32(),
+            };
+            let t = t.clamp(0.0, 1.0);
+            let t = 3.0 * t * t - 2.0 * t * t * t; // Smoothstep
+
+            let distance = lamp.light.max_distance * Coord::new(t);
+            let light = Spotlight {
+                max_distance: distance,
+                ..*lamp.light
+            };
+
+            (light, *lamp.collider)
+        });
+
         let spotlights = world
             .level
             .obstacles
@@ -122,17 +148,11 @@ impl LightsRender {
                 obstacle
                     .lights
                     .iter()
-                    .map(|(_, light)| (light, *obstacle.collider))
+                    .map(|(_, &light)| (light, *obstacle.collider))
             })
-            .chain(
-                world
-                    .level
-                    .lamps
-                    .iter()
-                    .map(|(_, lamp)| (lamp.light, *lamp.collider)),
-            )
+            .chain(lamps)
             .map(|(light, collider)| (light, collider.rotation, collider.pos()));
-        for (&spotlight, rotation, offset) in spotlights {
+        for (spotlight, rotation, offset) in spotlights {
             let position = spotlight.position.rotate(Coord::new(rotation.as_radians())) + offset;
             let angle = spotlight.angle + rotation.as_radians();
             let spotlight = Spotlight {

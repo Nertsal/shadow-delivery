@@ -668,12 +668,12 @@
       "collider": {
         "aabb": {
           "min": [
-            20.251223,
-            -2.5954745
+            20.321253,
+            -4.8756957
           ],
           "max": [
-            20.75122,
-            -2.0954762
+            20.82125,
+            -4.375698
           ]
         },
         "rotation": 0.0
@@ -691,7 +691,12 @@
         "max_distance": 5.0,
         "distance_gradient": 1.0,
         "volume": 0.5
-      }
+      },
+      "state": {
+        "Down": 0.0
+      },
+      "up_time": 1.0,
+      "down_time": 1.5
     },
     {
       "collider": {
@@ -720,7 +725,12 @@
         "max_distance": 5.0,
         "distance_gradient": 1.0,
         "volume": 0.5
-      }
+      },
+      "state": {
+        "Down": 0.0
+      },
+      "up_time": 1.0,
+      "down_time": 0.0
     },
     {
       "collider": {
@@ -749,7 +759,12 @@
         "max_distance": 5.0,
         "distance_gradient": 1.0,
         "volume": 0.5
-      }
+      },
+      "state": {
+        "Down": 0.0
+      },
+      "up_time": 1.0,
+      "down_time": 0.0
     }
   ],
   "props": [

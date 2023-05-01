@@ -30,7 +30,35 @@ impl World {
         self.player_movement(delta_time);
         self.collisions();
         self.waypoints();
+        self.update_lamps(delta_time);
         self.update_camera(delta_time);
+    }
+
+    fn update_lamps(&mut self, delta_time: Time) {
+        #[derive(StructQuery)]
+        struct LampRef<'a> {
+            state: &'a mut LampState,
+            up_time: &'a Time,
+            down_time: &'a Time,
+        }
+        let mut query = query_lamp_ref!(self.level.lamps);
+        let mut iter = query.iter_mut();
+        while let Some((_, lamp)) = iter.next() {
+            let (LampState::Up(time) | LampState::Down(time)) = lamp.state;
+            *time -= delta_time;
+            if *time <= Time::ZERO {
+                *lamp.state = match lamp.state {
+                    LampState::Up(_) => {
+                        if *lamp.down_time > Time::ZERO {
+                            LampState::Down(*lamp.down_time)
+                        } else {
+                            LampState::Up(Time::ZERO)
+                        }
+                    }
+                    LampState::Down(_) => LampState::Up(*lamp.up_time),
+                };
+            }
+        }
     }
 
     fn update_particles(&mut self, delta_time: Time) {
