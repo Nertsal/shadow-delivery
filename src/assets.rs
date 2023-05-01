@@ -31,6 +31,7 @@ pub struct Sprites {
     pub wall: Texture,
     pub bike: Texture,
     pub target: Texture,
+    pub lamp: Texture,
 }
 
 impl Texture {

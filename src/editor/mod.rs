@@ -32,6 +32,7 @@ enum DragTarget {
     Spawn,
     Waypoint(usize),
     Obstacle(usize),
+    Lamp(usize),
     NewObstacle,
 }
 
@@ -40,6 +41,7 @@ enum EditorMode {
     Spawn,
     Waypoint,
     Obstacle,
+    Lamp,
 }
 
 impl Editor {
@@ -139,6 +141,16 @@ impl Editor {
                     target: DragTarget::NewObstacle,
                 });
             }
+            EditorMode::Lamp => {
+                let aabb = Aabb2::point(world_pos).extend_uniform(Coord::new(0.25));
+                self.world.level.lamps.insert(Lamp {
+                    collider: Collider::new(aabb),
+                    light: Spotlight {
+                        angle_range: f32::PI * 2.0,
+                        ..default()
+                    },
+                });
+            }
         }
     }
 
@@ -164,6 +176,15 @@ impl Editor {
                     self.world
                         .level
                         .obstacles
+                        .collider
+                        .get_mut(id)
+                        .unwrap()
+                        .teleport(world_pos);
+                }
+                DragTarget::Lamp(id) => {
+                    self.world
+                        .level
+                        .lamps
                         .collider
                         .get_mut(id)
                         .unwrap()
@@ -198,6 +219,7 @@ impl Editor {
 
         let waypoints = query_collider_ref!(self.world.level.waypoints);
         let obstacles = query_collider_ref!(self.world.level.obstacles);
+        let lamps = query_collider_ref!(self.world.level.lamps);
         let mut colliders = std::iter::once((
             DragTarget::Spawn,
             ColliderRef {
@@ -213,7 +235,8 @@ impl Editor {
             obstacles
                 .iter()
                 .map(|(id, item)| (DragTarget::Obstacle(id), item)),
-        );
+        )
+        .chain(lamps.iter().map(|(id, item)| (DragTarget::Lamp(id), item)));
 
         let target = Collider::new(Aabb2::point(position).extend_uniform(Coord::new(0.01)));
         colliders
@@ -285,6 +308,9 @@ impl geng::State for Editor {
                 }
                 geng::Key::Num3 => {
                     self.mode = EditorMode::Obstacle;
+                }
+                geng::Key::Num4 => {
+                    self.mode = EditorMode::Lamp;
                 }
                 _ => {}
             },

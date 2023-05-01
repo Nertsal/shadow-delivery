@@ -114,12 +114,24 @@ impl LightsRender {
         camera: &Camera2d,
         geometry: &ugli::VertexBuffer<NormalVertex>,
     ) {
-        let spotlights = world.level.obstacles.iter().flat_map(|(_, obstacle)| {
-            obstacle
-                .lights
-                .iter()
-                .map(|(_, light)| (light, obstacle.collider.rotation, obstacle.collider.pos()))
-        });
+        let spotlights = world
+            .level
+            .obstacles
+            .iter()
+            .flat_map(|(_, obstacle)| {
+                obstacle
+                    .lights
+                    .iter()
+                    .map(|(_, light)| (light, *obstacle.collider))
+            })
+            .chain(
+                world
+                    .level
+                    .lamps
+                    .iter()
+                    .map(|(_, lamp)| (lamp.light, *lamp.collider)),
+            )
+            .map(|(light, collider)| (light, collider.rotation, collider.pos()));
         for (spotlight, rotation, offset) in spotlights {
             let light_pos = spotlight
                 .position

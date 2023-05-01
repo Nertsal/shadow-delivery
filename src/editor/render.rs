@@ -68,6 +68,7 @@ impl Editor {
                 }
             }
             EditorMode::Obstacle => {}
+            EditorMode::Lamp => {}
         }
 
         if let Some(drag) = &self.drag {

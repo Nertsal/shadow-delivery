@@ -7,6 +7,14 @@ pub struct Level {
     pub global_light: GlobalLight,
     pub waypoints: StructOf<Vec<Waypoint>>,
     pub obstacles: StructOf<Vec<Obstacle>>,
+    pub lamps: StructOf<Vec<Lamp>>,
+}
+
+#[derive(StructOf, Serialize, Deserialize, Default)]
+pub struct Lamp {
+    pub collider: Collider,
+    /// In relative coordinates.
+    pub light: Spotlight,
 }
 
 #[derive(StructOf, Serialize, Deserialize, Default)]
@@ -40,6 +48,8 @@ struct LevelSerde {
     pub waypoints: Vec<Waypoint>,
     #[serde(default)]
     pub obstacles: Vec<Obstacle>,
+    #[serde(default)]
+    pub lamps: Vec<Lamp>,
 }
 
 impl From<Level> for LevelSerde {
@@ -55,6 +65,12 @@ impl From<Level> for LevelSerde {
                 .collect(),
             obstacles: level
                 .obstacles
+                .inner
+                .into_iter()
+                .map(|(_, item)| item)
+                .collect(),
+            lamps: level
+                .lamps
                 .inner
                 .into_iter()
                 .map(|(_, item)| item)
@@ -75,11 +91,17 @@ impl From<LevelSerde> for Level {
             obstacles.insert(item);
         }
 
+        let mut lamps = StructOf::<Vec<Lamp>>::new();
+        for item in level.lamps {
+            lamps.insert(item);
+        }
+
         Self {
             spawn_point: level.spawn_point,
             global_light: level.global_light,
             waypoints,
             obstacles,
+            lamps,
         }
     }
 }

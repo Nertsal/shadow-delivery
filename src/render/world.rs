@@ -23,6 +23,7 @@ impl WorldRender {
         normal_framebuffer: &mut ugli::Framebuffer,
     ) {
         self.draw_obstacles(world, framebuffer, normal_framebuffer);
+        self.draw_lamps(world, framebuffer, normal_framebuffer);
         self.draw_waypoints(world, framebuffer, normal_framebuffer);
         self.draw_player(world, framebuffer, normal_framebuffer);
     }
@@ -40,6 +41,28 @@ impl WorldRender {
             framebuffer,
             normal_framebuffer,
         );
+    }
+
+    pub fn draw_lamps(
+        &mut self,
+        world: &World,
+        framebuffer: &mut ugli::Framebuffer,
+        normal_framebuffer: &mut ugli::Framebuffer,
+    ) {
+        #[derive(StructQuery)]
+        struct LampRef<'a> {
+            collider: &'a Collider,
+        }
+        for item in query_lamp_ref!(world.level.lamps).values() {
+            let texture = &self.assets.sprites.lamp;
+            self.draw_simple(
+                item.collider,
+                texture,
+                &world.camera,
+                framebuffer,
+                normal_framebuffer,
+            );
+        }
     }
 
     pub fn draw_obstacles(
