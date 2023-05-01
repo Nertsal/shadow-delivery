@@ -24,6 +24,7 @@ pub struct Shaders {
     pub normal_map: ugli::Program,
     pub normal_texture: ugli::Program,
     pub visibility: ugli::Program,
+    pub background: ugli::Program,
 }
 
 #[derive(geng::Load)]
@@ -44,6 +45,7 @@ pub struct Props {
     pub road_ul: Texture,
     pub road_rd: Texture,
     pub road_dl: Texture,
+    pub bricks: Texture,
 }
 
 impl Props {
@@ -55,6 +57,7 @@ impl Props {
             "road_ul" => Some(&self.road_ul),
             "road_rd" => Some(&self.road_rd),
             "road_dl" => Some(&self.road_dl),
+            "bricks" => Some(&self.bricks),
             _ => None,
         }
     }

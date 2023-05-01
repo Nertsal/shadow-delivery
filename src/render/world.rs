@@ -22,12 +22,46 @@ impl WorldRender {
         framebuffer: &mut ugli::Framebuffer,
         normal_framebuffer: &mut ugli::Framebuffer,
     ) {
+        self.draw_background(world, framebuffer);
         self.draw_props(world, framebuffer, normal_framebuffer);
         self.draw_obstacles(world, framebuffer, normal_framebuffer);
         self.draw_lamps(world, framebuffer, normal_framebuffer);
         self.draw_waypoints(world, framebuffer, normal_framebuffer);
         self.draw_player(world, framebuffer, normal_framebuffer);
         self.draw_particles(world, framebuffer, normal_framebuffer);
+    }
+
+    pub fn draw_background(&mut self, world: &World, framebuffer: &mut ugli::Framebuffer) {
+        let framebuffer_size = framebuffer.size().map(|x| x as f32);
+        let fov = world.camera.fov;
+        let scale = vec2(framebuffer_size.aspect() * fov, fov);
+        let matrix = mat3::translate(world.camera.center)
+            * mat3::rotate(world.camera.rotation)
+            * mat3::scale(scale);
+        let geometry = [(-1, -1), (1, -1), (1, 1), (-1, 1)]
+            .into_iter()
+            .map(|(x, y)| draw2d::Vertex {
+                a_pos: vec2(x as f32, y as f32),
+            })
+            .collect();
+        let geometry = ugli::VertexBuffer::new_dynamic(self.geng.ugli(), geometry);
+        ugli::draw(
+            framebuffer,
+            &self.assets.shaders.background,
+            ugli::DrawMode::TriangleFan,
+            &geometry,
+            (
+                ugli::uniforms! {
+                    u_model_matrix: matrix,
+                    u_texture: self.assets.sprites.props.bricks.texture(),
+                },
+                world.camera.uniforms(framebuffer.size().map(|x| x as f32)),
+            ),
+            ugli::DrawParameters {
+                blend_mode: Some(ugli::BlendMode::straight_alpha()),
+                ..default()
+            },
+        );
     }
 
     pub fn draw_props(

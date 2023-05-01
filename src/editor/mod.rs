@@ -64,10 +64,12 @@ impl Editor {
             mode: EditorMode::Spawn,
             drag: None,
             cursor_pos: vec2::ZERO,
-            props: ["road", "road_v", "road_ur", "road_ul", "road_rd", "road_dl"]
-                .into_iter()
-                .map(String::from)
-                .collect(),
+            props: [
+                "road", "road_v", "road_ur", "road_ul", "road_rd", "road_dl", "bricks",
+            ]
+            .into_iter()
+            .map(String::from)
+            .collect(),
         }
     }
 
