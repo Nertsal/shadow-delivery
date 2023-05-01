@@ -12,12 +12,12 @@
       "collider": {
         "aabb": {
           "min": [
-            36.08101,
-            -6.830152
+            -10.833172,
+            3.4189079
           ],
           "max": [
-            36.58101,
-            -6.330152
+            -10.333172,
+            3.9189079
           ]
         },
         "rotation": 0.0
@@ -27,12 +27,12 @@
       "collider": {
         "aabb": {
           "min": [
-            27.84805,
-            23.967676
+            2.4879422,
+            16.50206
           ],
           "max": [
-            28.34805,
-            24.467676
+            2.9879422,
+            17.00206
           ]
         },
         "rotation": 0.0
@@ -42,12 +42,12 @@
       "collider": {
         "aabb": {
           "min": [
-            16.839788,
-            16.61272
+            15.583229,
+            -7.2202806
           ],
           "max": [
-            17.339788,
-            17.11272
+            16.083227,
+            -6.7202806
           ]
         },
         "rotation": 0.0
@@ -57,12 +57,12 @@
       "collider": {
         "aabb": {
           "min": [
-            -13.060187,
-            22.827309
+            28.40876,
+            10.375467
           ],
           "max": [
-            -12.560187,
-            23.327309
+            28.90876,
+            10.875467
           ]
         },
         "rotation": 0.0
@@ -72,12 +72,12 @@
       "collider": {
         "aabb": {
           "min": [
-            8.5,
-            3.5
+            22.685163,
+            3.9694805
           ],
           "max": [
-            9.0,
-            3.0
+            23.185163,
+            4.4694805
           ]
         },
         "rotation": 0.0
@@ -87,12 +87,12 @@
       "collider": {
         "aabb": {
           "min": [
-            -1.0,
-            7.5
+            3.1750336,
+            -12.851198
           ],
           "max": [
-            -0.5,
-            7.0
+            3.6750336,
+            -12.351198
           ]
         },
         "rotation": 0.0
@@ -117,12 +117,87 @@
       "collider": {
         "aabb": {
           "min": [
-            3.1750336,
-            -12.851198
+            -1.0,
+            7.5
           ],
           "max": [
-            3.6750336,
-            -12.351198
+            -0.5,
+            7.0
+          ]
+        },
+        "rotation": 0.0
+      }
+    },
+    {
+      "collider": {
+        "aabb": {
+          "min": [
+            8.5,
+            3.5
+          ],
+          "max": [
+            9.0,
+            3.0
+          ]
+        },
+        "rotation": 0.0
+      }
+    },
+    {
+      "collider": {
+        "aabb": {
+          "min": [
+            -13.060187,
+            22.827309
+          ],
+          "max": [
+            -12.560187,
+            23.327309
+          ]
+        },
+        "rotation": 0.0
+      }
+    },
+    {
+      "collider": {
+        "aabb": {
+          "min": [
+            16.839788,
+            16.61272
+          ],
+          "max": [
+            17.339788,
+            17.11272
+          ]
+        },
+        "rotation": 0.0
+      }
+    },
+    {
+      "collider": {
+        "aabb": {
+          "min": [
+            27.84805,
+            23.967676
+          ],
+          "max": [
+            28.34805,
+            24.467676
+          ]
+        },
+        "rotation": 0.0
+      }
+    },
+    {
+      "collider": {
+        "aabb": {
+          "min": [
+            36.08101,
+            -6.830152
+          ],
+          "max": [
+            36.58101,
+            -6.330152
           ]
         },
         "rotation": 0.0
@@ -134,12 +209,12 @@
       "collider": {
         "aabb": {
           "min": [
-            18.587887,
-            -1.861443
+            39.230377,
+            -39.742558
           ],
           "max": [
-            22.337107,
-            5.8652225
+            60.942463,
+            49.46865
           ]
         },
         "rotation": 0.0
@@ -151,12 +226,12 @@
       "collider": {
         "aabb": {
           "min": [
-            3.6358452,
-            13.050503
+            -19.433868,
+            -31.837906
           ],
           "max": [
-            7.471474,
-            18.301363
+            14.9042845,
+            -13.124341
           ]
         },
         "rotation": 0.0
@@ -168,12 +243,12 @@
       "collider": {
         "aabb": {
           "min": [
-            37.314705,
-            -12.983822
+            -46.50231,
+            -29.689306
           ],
           "max": [
-            52.204052,
-            12.26552
+            -17.36679,
+            -4.8741546
           ]
         },
         "rotation": 0.0
@@ -185,12 +260,12 @@
       "collider": {
         "aabb": {
           "min": [
-            13.426057,
-            4.975212
+            2.0,
+            1.0
           ],
           "max": [
-            23.63283,
-            14.546024
+            7.0,
+            4.0
           ]
         },
         "rotation": 0.0
@@ -202,198 +277,35 @@
       "collider": {
         "aabb": {
           "min": [
-            29.179466,
-            4.1003456
-          ],
-          "max": [
-            39.55022,
-            28.02419
-          ]
-        },
-        "rotation": 0.0
-      },
-      "lights": [],
-      "path": null
-    },
-    {
-      "collider": {
-        "aabb": {
-          "min": [
-            13.429673,
-            -33.84857
-          ],
-          "max": [
-            49.810333,
-            -7.453195
-          ]
-        },
-        "rotation": 0.0
-      },
-      "lights": [],
-      "path": null
-    },
-    {
-      "collider": {
-        "aabb": {
-          "min": [
-            -22.586699,
-            25.030539
-          ],
-          "max": [
-            49.348923,
-            48.89627
-          ]
-        },
-        "rotation": 0.0
-      },
-      "lights": [],
-      "path": null
-    },
-    {
-      "collider": {
-        "aabb": {
-          "min": [
-            -44.332253,
-            16.16386
-          ],
-          "max": [
-            -13.188497,
-            43.73301
-          ]
-        },
-        "rotation": 0.0
-      },
-      "lights": [],
-      "path": null
-    },
-    {
-      "collider": {
-        "aabb": {
-          "min": [
-            -4.1026206,
-            17.486713
-          ],
-          "max": [
-            20.471962,
-            27.230228
-          ]
-        },
-        "rotation": 0.0
-      },
-      "lights": [],
-      "path": null
-    },
-    {
-      "collider": {
-        "aabb": {
-          "min": [
-            3.0,
-            5.0
-          ],
-          "max": [
-            5.0,
-            6.0
-          ]
-        },
-        "rotation": 4.0
-      },
-      "lights": [
-        {
-          "position": [
-            1.0,
-            0.3
-          ],
-          "angle": 0.0,
-          "angle_range": 0.7,
-          "angle_gradient": 1.0,
-          "color": "#ffffff",
-          "intensity": 0.5,
-          "max_distance": 5.0,
-          "distance_gradient": 1.0,
-          "volume": 0.5
-        },
-        {
-          "position": [
-            1.0,
-            -0.3
-          ],
-          "angle": 0.0,
-          "angle_range": 0.7,
-          "angle_gradient": 1.0,
-          "color": "#ffffff",
-          "intensity": 0.5,
-          "max_distance": 5.0,
-          "distance_gradient": 1.0,
-          "volume": 0.5
-        }
-      ],
-      "path": null
-    },
-    {
-      "collider": {
-        "aabb": {
-          "min": [
-            -4.0,
-            -2.0
-          ],
-          "max": [
-            -1.0,
-            -0.5
-          ]
-        },
-        "rotation": 0.0
-      },
-      "lights": [
-        {
-          "position": [
-            1.5,
-            0.6
-          ],
-          "angle": 0.0,
-          "angle_range": 0.7,
-          "angle_gradient": 1.0,
-          "color": "#ffffff",
-          "intensity": 0.5,
-          "max_distance": 5.0,
-          "distance_gradient": 1.0,
-          "volume": 0.5
-        },
-        {
-          "position": [
-            1.5,
-            -0.6
-          ],
-          "angle": 0.0,
-          "angle_range": 0.7,
-          "angle_gradient": 1.0,
-          "color": "#ffffff",
-          "intensity": 0.5,
-          "max_distance": 5.0,
-          "distance_gradient": 1.0,
-          "volume": 0.5
-        }
-      ],
-      "path": {
-        "points": [
-          [
-            9.0,
-            -1.0
-          ],
-          [
-            9.0,
-            -11.0
-          ],
-          [
             -10.0,
-            -11.0
+            2.0
           ],
-          [
-            -10.0,
-            -1.0
+          "max": [
+            -2.0,
+            10.0
           ]
-        ],
-        "next_point": 0
-      }
+        },
+        "rotation": 0.0
+      },
+      "lights": [],
+      "path": null
+    },
+    {
+      "collider": {
+        "aabb": {
+          "min": [
+            -8.0,
+            -9.0
+          ],
+          "max": [
+            6.0,
+            -3.0
+          ]
+        },
+        "rotation": 0.0
+      },
+      "lights": [],
+      "path": null
     },
     {
       "collider": {
@@ -489,29 +401,124 @@
       "collider": {
         "aabb": {
           "min": [
-            -8.0,
-            -9.0
+            -4.0,
+            -2.0
           ],
           "max": [
-            6.0,
-            -3.0
+            -1.0,
+            -0.5
           ]
         },
         "rotation": 0.0
       },
-      "lights": [],
-      "path": null
-    },
-    {
-      "collider": {
-        "aabb": {
-          "min": [
+      "lights": [
+        {
+          "position": [
+            1.5,
+            0.6
+          ],
+          "angle": 0.0,
+          "angle_range": 0.7,
+          "angle_gradient": 1.0,
+          "color": "#ffffff",
+          "intensity": 0.5,
+          "max_distance": 5.0,
+          "distance_gradient": 1.0,
+          "volume": 0.5
+        },
+        {
+          "position": [
+            1.5,
+            -0.6
+          ],
+          "angle": 0.0,
+          "angle_range": 0.7,
+          "angle_gradient": 1.0,
+          "color": "#ffffff",
+          "intensity": 0.5,
+          "max_distance": 5.0,
+          "distance_gradient": 1.0,
+          "volume": 0.5
+        }
+      ],
+      "path": {
+        "points": [
+          [
+            9.0,
+            -1.0
+          ],
+          [
+            9.0,
+            -11.0
+          ],
+          [
             -10.0,
-            2.0
+            -11.0
+          ],
+          [
+            -10.0,
+            -1.0
+          ]
+        ],
+        "next_point": 0
+      }
+    },
+    {
+      "collider": {
+        "aabb": {
+          "min": [
+            3.0,
+            5.0
           ],
           "max": [
-            -2.0,
-            10.0
+            5.0,
+            6.0
+          ]
+        },
+        "rotation": 4.0
+      },
+      "lights": [
+        {
+          "position": [
+            1.0,
+            0.3
+          ],
+          "angle": 0.0,
+          "angle_range": 0.7,
+          "angle_gradient": 1.0,
+          "color": "#ffffff",
+          "intensity": 0.5,
+          "max_distance": 5.0,
+          "distance_gradient": 1.0,
+          "volume": 0.5
+        },
+        {
+          "position": [
+            1.0,
+            -0.3
+          ],
+          "angle": 0.0,
+          "angle_range": 0.7,
+          "angle_gradient": 1.0,
+          "color": "#ffffff",
+          "intensity": 0.5,
+          "max_distance": 5.0,
+          "distance_gradient": 1.0,
+          "volume": 0.5
+        }
+      ],
+      "path": null
+    },
+    {
+      "collider": {
+        "aabb": {
+          "min": [
+            -4.1026206,
+            17.486713
+          ],
+          "max": [
+            20.471962,
+            27.230228
           ]
         },
         "rotation": 0.0
@@ -523,12 +530,12 @@
       "collider": {
         "aabb": {
           "min": [
-            2.0,
-            1.0
+            -44.332253,
+            16.16386
           ],
           "max": [
-            7.0,
-            4.0
+            -13.188497,
+            43.73301
           ]
         },
         "rotation": 0.0
@@ -540,12 +547,12 @@
       "collider": {
         "aabb": {
           "min": [
-            -46.50231,
-            -29.689306
+            -22.586699,
+            25.030539
           ],
           "max": [
-            -17.36679,
-            -4.8741546
+            49.348923,
+            48.89627
           ]
         },
         "rotation": 0.0
@@ -557,12 +564,46 @@
       "collider": {
         "aabb": {
           "min": [
-            -19.433868,
-            -31.837906
+            13.429673,
+            -33.84857
           ],
           "max": [
-            14.9042845,
-            -13.124341
+            49.810333,
+            -7.453195
+          ]
+        },
+        "rotation": 0.0
+      },
+      "lights": [],
+      "path": null
+    },
+    {
+      "collider": {
+        "aabb": {
+          "min": [
+            29.179466,
+            4.1003456
+          ],
+          "max": [
+            39.55022,
+            28.02419
+          ]
+        },
+        "rotation": 0.0
+      },
+      "lights": [],
+      "path": null
+    },
+    {
+      "collider": {
+        "aabb": {
+          "min": [
+            13.426057,
+            4.975212
+          ],
+          "max": [
+            23.63283,
+            14.546024
           ]
         },
         "rotation": 0.0
@@ -586,6 +627,129 @@
       },
       "lights": [],
       "path": null
+    },
+    {
+      "collider": {
+        "aabb": {
+          "min": [
+            3.6358452,
+            13.050503
+          ],
+          "max": [
+            7.471474,
+            18.301363
+          ]
+        },
+        "rotation": 0.0
+      },
+      "lights": [],
+      "path": null
+    },
+    {
+      "collider": {
+        "aabb": {
+          "min": [
+            18.587887,
+            -1.861443
+          ],
+          "max": [
+            22.337107,
+            5.8652225
+          ]
+        },
+        "rotation": 0.0
+      },
+      "lights": [],
+      "path": null
+    }
+  ],
+  "lamps": [
+    {
+      "collider": {
+        "aabb": {
+          "min": [
+            12.6929655,
+            6.826964
+          ],
+          "max": [
+            13.1929655,
+            7.3269644
+          ]
+        },
+        "rotation": 0.0
+      },
+      "light": {
+        "position": [
+          0.0,
+          0.0
+        ],
+        "angle": 0.0,
+        "angle_range": 6.2831855,
+        "angle_gradient": 1.0,
+        "color": "#ffffff",
+        "intensity": 0.5,
+        "max_distance": 5.0,
+        "distance_gradient": 1.0,
+        "volume": 0.5
+      }
+    },
+    {
+      "collider": {
+        "aabb": {
+          "min": [
+            -16.354286,
+            -12.7533
+          ],
+          "max": [
+            -15.854286,
+            -12.2533
+          ]
+        },
+        "rotation": 0.0
+      },
+      "light": {
+        "position": [
+          0.0,
+          0.0
+        ],
+        "angle": 0.0,
+        "angle_range": 6.2831855,
+        "angle_gradient": 1.0,
+        "color": "#ffffff",
+        "intensity": 0.5,
+        "max_distance": 5.0,
+        "distance_gradient": 1.0,
+        "volume": 0.5
+      }
+    },
+    {
+      "collider": {
+        "aabb": {
+          "min": [
+            20.251223,
+            -2.5954745
+          ],
+          "max": [
+            20.75122,
+            -2.0954762
+          ]
+        },
+        "rotation": 0.0
+      },
+      "light": {
+        "position": [
+          0.0,
+          0.0
+        ],
+        "angle": 0.0,
+        "angle_range": 6.2831855,
+        "angle_gradient": 1.0,
+        "color": "#ffffff",
+        "intensity": 0.5,
+        "max_distance": 5.0,
+        "distance_gradient": 1.0,
+        "volume": 0.5
+      }
     }
   ]
 }
