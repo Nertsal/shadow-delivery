@@ -19,6 +19,7 @@ pub struct Sounds {
     pub bounce: geng::Sound,
     pub hurt: geng::Sound,
     pub deliver: geng::Sound,
+    pub death: geng::Sound,
 }
 
 #[derive(geng::Load)]

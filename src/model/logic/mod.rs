@@ -134,6 +134,8 @@ impl World {
     }
 
     fn kill_player(&mut self) {
+        self.assets.sounds.death.play();
+
         self.player.shadow_bonus = true;
         self.player.score = self.player.score.saturating_sub(DEATH_PENALTY);
         self.player.velocity = vec2::ZERO;
