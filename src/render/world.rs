@@ -26,6 +26,32 @@ impl WorldRender {
         self.draw_lamps(world, framebuffer, normal_framebuffer);
         self.draw_waypoints(world, framebuffer, normal_framebuffer);
         self.draw_player(world, framebuffer, normal_framebuffer);
+        self.draw_particles(world, framebuffer, normal_framebuffer);
+    }
+
+    pub fn draw_particles(
+        &mut self,
+        world: &World,
+        framebuffer: &mut ugli::Framebuffer,
+        _normal_framebuffer: &mut ugli::Framebuffer,
+    ) {
+        #[derive(StructQuery)]
+        struct ParticleRef<'a> {
+            position: &'a vec2<Coord>,
+            radius: &'a Coord,
+            color: &'a Color,
+        }
+        for particle in query_particle_ref!(world.particles).values() {
+            self.geng.draw2d().draw2d(
+                framebuffer,
+                &world.camera,
+                &draw2d::Ellipse::circle(
+                    particle.position.map(Coord::as_f32),
+                    particle.radius.as_f32(),
+                    *particle.color,
+                ),
+            );
+        }
     }
 
     pub fn draw_player(

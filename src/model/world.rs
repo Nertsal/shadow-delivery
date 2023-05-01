@@ -4,6 +4,7 @@ pub struct World {
     pub player: Player,
     pub active_waypoint: usize,
     pub level: Level,
+    pub particles: StructOf<Vec<Particle>>,
     pub camera: Camera2d,
 }
 
@@ -19,6 +20,7 @@ impl World {
             },
             active_waypoint: 0,
             level,
+            particles: StructOf::new(),
             camera: Camera2d {
                 center: vec2::ZERO,
                 rotation: 0.0,

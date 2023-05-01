@@ -20,6 +20,7 @@ pub type Coord = R32;
 pub type Time = R32;
 pub type Health = R32;
 pub type Score = u64;
+pub type Color = Rgba<f32>;
 
 pub struct Player {
     pub shadow_bonus: bool,
@@ -32,4 +33,13 @@ pub struct Player {
 pub struct PlayerControl {
     pub accelerate: Coord,
     pub turn: Coord,
+}
+
+#[derive(StructOf)]
+pub struct Particle {
+    pub position: vec2<Coord>,
+    pub velocity: vec2<Coord>,
+    pub lifetime: Time,
+    pub radius: Coord,
+    pub color: Color,
 }

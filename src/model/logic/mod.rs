@@ -23,6 +23,7 @@ impl World {
         player_visibility: R32,
         delta_time: Time,
     ) {
+        self.update_particles(delta_time);
         self.update_player(player_visibility, delta_time);
         self.control_player(player_control, delta_time);
         self.obstacles_movement(delta_time);
@@ -30,6 +31,33 @@ impl World {
         self.collisions();
         self.waypoints();
         self.update_camera(delta_time);
+    }
+
+    fn update_particles(&mut self, delta_time: Time) {
+        #[derive(StructQuery)]
+        struct ParticleRef<'a> {
+            position: &'a mut vec2<Coord>,
+            velocity: &'a vec2<Coord>,
+            lifetime: &'a mut Time,
+            radius: &'a mut Coord,
+        }
+        let mut dead = Vec::new();
+        let mut query = query_particle_ref!(self.particles);
+        let mut iter = query.iter_mut();
+        while let Some((id, particle)) = iter.next() {
+            *particle.lifetime -= delta_time;
+            if *particle.lifetime <= Time::ZERO {
+                dead.push(id);
+                continue;
+            }
+            *particle.position += *particle.velocity * delta_time;
+            let time = Time::new(0.2);
+            *particle.radius = (*particle.lifetime).min(time) / time * Coord::new(0.1);
+        }
+        dead.sort();
+        for id in dead.into_iter().rev() {
+            self.particles.remove(id);
+        }
     }
 
     fn update_player(&mut self, visibility: R32, delta_time: Time) {
@@ -40,6 +68,23 @@ impl World {
 
         if visibility.as_f32() > SHADOW_MAX_VIS {
             self.player.shadow_bonus = false;
+
+            // Particles
+            let p = f64::from(visibility.as_f32()) * 0.5;
+            let mut rng = thread_rng();
+            if rng.gen_bool(p) {
+                let position = rng.gen_circle(self.player.collider.pos(), Coord::new(0.1));
+                let speed = 1.0;
+                let angle = rng.gen_range(0.0..f32::PI * 2.0);
+                let velocity = (Angle::new_radians(angle).unit_direction() * speed).map(Coord::new);
+                self.particles.insert(Particle {
+                    position,
+                    velocity,
+                    lifetime: Time::new(0.5),
+                    radius: Coord::new(0.1),
+                    color: Rgba::WHITE,
+                });
+            }
         }
 
         self.player.health =
