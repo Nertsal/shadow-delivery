@@ -151,6 +151,10 @@ impl GameRender {
         }
 
         let visibility = {
+            if world.player.health <= Health::ZERO {
+                return 0.0;
+            }
+
             // Player overlay
             let mut player_framebuffer = ugli::Framebuffer::new_color(
                 self.geng.ugli(),

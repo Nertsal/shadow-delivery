@@ -6,7 +6,7 @@ const OBSTACLE_SPAWN_DISTANCE_MIN: f32 = 15.0;
 const WAYPOINT_DISTANCE_MIN: f32 = 5.0;
 const WAYPOINT_DISTANCE_MAX: f32 = 20.0;
 
-const DEATH_PENALTY: Score = 1000;
+// const DEATH_PENALTY: Score = 1000;
 const DELIVER_SCORE: Score = 500;
 const SHADOW_BONUS: Score = 1000;
 const SHADOW_MAX_VIS: f32 = 0.05;
@@ -109,6 +109,10 @@ impl World {
     }
 
     fn update_player(&mut self, visibility: R32, delta_time: Time) {
+        if self.player.health <= Health::ZERO {
+            return;
+        }
+
         // if visibility == R32::ZERO {
         //     self.player.health = (self.player.health + Health::new(HEALTH_RESTORE) * delta_time)
         //         .min(Health::new(100.0));
@@ -155,15 +159,19 @@ impl World {
     fn kill_player(&mut self) {
         self.assets.sounds.death.play();
 
-        self.player.shadow_bonus = true;
-        self.player.score = self.player.score.saturating_sub(DEATH_PENALTY);
-        self.player.velocity = vec2::ZERO;
-        self.player.health = Health::new(100.0);
-        self.player.collider.teleport(self.level.spawn_point);
-        self.player.collider.rotation = Angle::ZERO;
+        // self.player.shadow_bonus = true;
+        // self.player.score = self.player.score.saturating_sub(DEATH_PENALTY);
+        // self.player.velocity = vec2::ZERO;
+        // self.player.health = Health::new(100.0);
+        // self.player.collider.teleport(self.level.spawn_point);
+        // self.player.collider.rotation = Angle::ZERO;
     }
 
     fn control_player(&mut self, control: PlayerControl, delta_time: Time) {
+        if self.player.health <= Health::ZERO {
+            return;
+        }
+
         self.player.collider.rotation +=
             Angle::new_radians(control.turn.as_f32() * PLAYER_TURN_SPEED * delta_time.as_f32());
 
@@ -222,11 +230,19 @@ impl World {
     }
 
     fn player_movement(&mut self, delta_time: Time) {
+        if self.player.health <= Health::ZERO {
+            return;
+        }
+
         let delta = self.player.velocity * delta_time;
         self.player.collider.translate(delta);
     }
 
     fn collisions(&mut self) {
+        if self.player.health <= Health::ZERO {
+            return;
+        }
+
         #[derive(StructQuery)]
         struct ObstacleRef<'a> {
             collider: &'a Collider,

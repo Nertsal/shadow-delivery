@@ -27,7 +27,9 @@ impl WorldRender {
         self.draw_obstacles(world, framebuffer, normal_framebuffer);
         self.draw_lamps(world, framebuffer, normal_framebuffer);
         self.draw_waypoints(world, framebuffer, normal_framebuffer);
-        self.draw_player(world, framebuffer, normal_framebuffer);
+        if world.player.health > Health::ZERO {
+            self.draw_player(world, framebuffer, normal_framebuffer);
+        }
         self.draw_particles(world, framebuffer, normal_framebuffer);
     }
 
@@ -313,12 +315,14 @@ impl WorldRender {
                     .get(world.active_waypoint)
                     .map(|item| (item, Rgba::new(0.0, 1.0, 1.0, 0.5))),
             )
-            .chain(std::iter::once((
-                ColliderRef {
-                    collider: &world.player.collider,
-                },
-                Rgba::new(0.0, 1.0, 0.0, 0.5),
-            )));
+            .chain((world.player.health > Health::ZERO).then(|| {
+                (
+                    ColliderRef {
+                        collider: &world.player.collider,
+                    },
+                    Rgba::new(0.0, 1.0, 0.0, 0.5),
+                )
+            }));
 
         for (item, color) in colliders {
             draw_collider(item.collider, color, &self.geng, framebuffer, &world.camera);
