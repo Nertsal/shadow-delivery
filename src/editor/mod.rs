@@ -16,6 +16,7 @@ pub struct Editor {
     render: EditorRender,
     render_cache: RenderCache,
     framebuffer_size: vec2<usize>,
+    draw_hitboxes: bool,
     world: World,
     level_path: PathBuf,
     mode: EditorMode,
@@ -57,6 +58,7 @@ impl Editor {
             render: EditorRender::new(geng, assets),
             render_cache: RenderCache::calculate(&world, geng, assets),
             framebuffer_size: vec2(1, 1),
+            draw_hitboxes: true,
             world,
             level_path,
             mode: EditorMode::Spawn,
@@ -330,6 +332,9 @@ impl geng::State for Editor {
         let ctrl = self.geng.window().is_key_pressed(geng::Key::LCtrl);
         match event {
             geng::Event::KeyDown { key } => match key {
+                geng::Key::F2 => {
+                    self.draw_hitboxes = !self.draw_hitboxes;
+                }
                 geng::Key::S if ctrl => {
                     let _ = util::report_err(self.save());
                 }
