@@ -113,8 +113,8 @@ impl World {
                 position,
                 velocity,
                 lifetime: Time::new(0.5),
-                radius: Coord::new(0.1),
-                color: Rgba::WHITE,
+                radius: Coord::new(0.15),
+                color: Rgba::opaque(0.2, 0.8, 0.9),
             });
         }
 
