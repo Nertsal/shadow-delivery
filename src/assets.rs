@@ -25,6 +25,7 @@ pub struct Shaders {
     pub normal_texture: ugli::Program,
     pub visibility: ugli::Program,
     pub background: ugli::Program,
+    pub health: ugli::Program,
 }
 
 #[derive(geng::Load)]

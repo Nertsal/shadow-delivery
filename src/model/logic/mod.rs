@@ -23,6 +23,8 @@ impl World {
         player_visibility: R32,
         delta_time: Time,
     ) {
+        self.time += delta_time;
+
         self.update_particles(delta_time);
         self.update_player(player_visibility, delta_time);
         self.control_player(player_control, delta_time);

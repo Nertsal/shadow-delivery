@@ -1,6 +1,7 @@
 use super::*;
 
 pub struct World {
+    pub time: Time,
     pub player: Player,
     pub active_waypoint: usize,
     pub level: Level,
@@ -11,6 +12,7 @@ pub struct World {
 impl World {
     pub fn new(level: Level) -> Self {
         Self {
+            time: Time::ZERO,
             player: Player {
                 shadow_bonus: true,
                 score: 0,

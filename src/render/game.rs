@@ -51,35 +51,37 @@ impl GameRender {
         let unit_geometry = ugli::VertexBuffer::new_dynamic(self.geng.ugli(), unit_quad());
 
         // Lighting
-        let (mut world_framebuffer, mut normal_framebuffer) =
-            self.lights.start_render(Rgba::BLACK, framebuffer);
-        // World
-        self.world
-            .draw(world, &mut world_framebuffer, &mut normal_framebuffer);
-        // Lights
-        // self.lights.render_normal_map(&world.camera, &cache.normal_geometry);
-        let geometry = cache
-            .light_geometry
-            .as_slice()
-            .iter()
-            .copied()
-            .chain(world.calculate_dynamic_light_geometry())
-            .collect();
-        let geometry = ugli::VertexBuffer::new_dynamic(self.geng.ugli(), geometry);
-        self.lights.render_lights(world, &world.camera, &geometry);
-        let player_light = Spotlight {
-            color: Rgba::opaque(0.8, 0.8, 1.0),
-            position: world.player.collider.pos(),
-            angle_range: f32::PI * 2.0,
-            max_distance: Coord::new(3.0),
-            volume: 0.2,
-            intensity: 0.1,
-            ..default()
-        };
-        self.lights
-            .render_spotlight(&player_light, true, &world.camera, &geometry);
-        // Finish
-        self.lights.finish(framebuffer);
+        {
+            let (mut world_framebuffer, mut normal_framebuffer) =
+                self.lights.start_render(Rgba::BLACK, framebuffer);
+            // World
+            self.world
+                .draw(world, &mut world_framebuffer, &mut normal_framebuffer);
+            // Lights
+            // self.lights.render_normal_map(&world.camera, &cache.normal_geometry);
+            let geometry = cache
+                .light_geometry
+                .as_slice()
+                .iter()
+                .copied()
+                .chain(world.calculate_dynamic_light_geometry())
+                .collect();
+            let geometry = ugli::VertexBuffer::new_dynamic(self.geng.ugli(), geometry);
+            self.lights.render_lights(world, &world.camera, &geometry);
+            let player_light = Spotlight {
+                color: Rgba::opaque(0.8, 0.8, 1.0),
+                position: world.player.collider.pos(),
+                angle_range: f32::PI * 2.0,
+                max_distance: Coord::new(3.0),
+                volume: 0.2,
+                intensity: 0.1,
+                ..default()
+            };
+            self.lights
+                .render_spotlight(&player_light, true, &world.camera, &geometry);
+            // Finish
+            self.lights.finish(framebuffer);
+        }
 
         // Waypoint arrow
         {
@@ -147,7 +149,7 @@ impl GameRender {
             }
         }
 
-        {
+        let visibility = {
             // Player overlay
             let mut player_framebuffer = ugli::Framebuffer::new_color(
                 self.geng.ugli(),
@@ -240,6 +242,28 @@ impl GameRender {
             );
 
             visibility
+        };
+
+        // Health
+        {
+            let health = world.player.health.as_f32() / 100.0;
+            let time = world.time.as_f32();
+            ugli::draw(
+                framebuffer,
+                &self.assets.shaders.health,
+                ugli::DrawMode::TriangleFan,
+                &unit_geometry,
+                ugli::uniforms! {
+                    u_health: health,
+                    u_time: time,
+                },
+                ugli::DrawParameters {
+                    blend_mode: Some(ugli::BlendMode::straight_alpha()),
+                    ..default()
+                },
+            );
         }
+
+        visibility
     }
 }
