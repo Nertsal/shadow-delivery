@@ -71,6 +71,26 @@ impl GameRender {
         if draw_hitboxes {
             self.world.draw_paths(world, framebuffer);
             self.world.draw_hitboxes(world, framebuffer);
+        } else {
+            #[derive(StructQuery)]
+            struct WaypointRef<'a> {
+                collider: &'a Collider,
+            }
+            let query = query_waypoint_ref!(world.level.waypoints);
+            if let Some(item) = query.get(world.active_waypoint) {
+                let size = item.collider.size();
+                let radius = size.x.max(size.y).as_f32();
+                self.geng.draw2d().draw2d(
+                    framebuffer,
+                    &world.camera,
+                    &draw2d::Ellipse::circle_with_cut(
+                        item.collider.pos().map(Coord::as_f32),
+                        radius,
+                        radius * 1.1,
+                        Rgba::new(0.0, 0.7, 0.7, 0.2),
+                    ),
+                );
+            }
         }
 
         {
