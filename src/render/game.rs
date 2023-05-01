@@ -119,10 +119,31 @@ impl GameRender {
                 &geng::PixelPerfectCamera,
                 &draw2d::Ellipse::circle(aabb.center(), size / 2.0, PLAYER_BACKGROUND_COLOR),
             );
-            self.geng.draw2d().draw2d(
+
+            let geometry = [(-1, -1), (1, -1), (1, 1), (-1, 1)]
+                .into_iter()
+                .map(|(x, y)| draw2d::Vertex {
+                    a_pos: vec2(x as f32, y as f32),
+                })
+                .collect();
+            let geometry = ugli::VertexBuffer::new_dynamic(self.geng.ugli(), geometry);
+            let matrix = mat3::translate(aabb.center()) * mat3::scale(aabb.size() / 2.0);
+            ugli::draw(
                 framebuffer,
-                &geng::PixelPerfectCamera,
-                &draw2d::TexturedQuad::new(aabb, &self.player_texture),
+                &self.assets.shaders.visibility,
+                ugli::DrawMode::TriangleFan,
+                &geometry,
+                (
+                    ugli::uniforms! {
+                        u_model_matrix: matrix,
+                        u_visibility_texture: &self.player_texture,
+                    },
+                    geng::PixelPerfectCamera.uniforms(framebuffer_size),
+                ),
+                ugli::DrawParameters {
+                    blend_mode: Some(ugli::BlendMode::straight_alpha()),
+                    ..default()
+                },
             );
 
             visibility
