@@ -101,9 +101,12 @@ impl GameRender {
                 .map(Coord::as_f32);
             let rotation = (target - collider.center()).arg();
 
+            let shift = vec2::UNIT_X * (world.time.as_f32() * 2.0).sin() * 0.1;
+
             let matrix = mat3::translate(aabb.center())
                 * mat3::scale(aabb.size() / 2.0)
-                * mat3::rotate(rotation);
+                * mat3::rotate(rotation)
+                * mat3::translate(shift);
             ugli::draw(
                 framebuffer,
                 &self.assets.shaders.texture,
