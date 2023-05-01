@@ -1,8 +1,12 @@
 use super::*;
 
+pub(super) const CAMERA_DEAD_FOV: f32 = 20.0;
+pub(super) const CAMERA_ALIVE_FOV: f32 = 30.0;
+
 pub struct World {
     pub assets: Rc<Assets>,
     pub time: Time,
+    pub death_time: Option<Time>,
     pub player: Player,
     pub active_waypoint: usize,
     pub level: Level,
@@ -18,6 +22,7 @@ impl World {
         Self {
             assets: assets.clone(),
             time: Time::ZERO,
+            death_time: None,
             player: Player {
                 shadow_bonus: true,
                 score: 0,
@@ -34,7 +39,7 @@ impl World {
             camera: Camera2d {
                 center: vec2::ZERO,
                 rotation: 0.0,
-                fov: 30.0,
+                fov: CAMERA_DEAD_FOV,
             },
             bounced: false,
             hurt_sfx_timeout: Time::ZERO,

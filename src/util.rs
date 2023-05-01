@@ -19,3 +19,9 @@ pub fn report_warn<T, E: Display>(res: Result<T, E>, msg: impl Display) -> Resul
         }
     }
 }
+
+pub fn smooth_step<F: Float>(t: F) -> F {
+    let two = F::ONE + F::ONE;
+    let three = two + F::ONE;
+    three * t * t - two * t * t * t
+}

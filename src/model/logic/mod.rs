@@ -158,7 +158,7 @@ impl World {
 
     fn kill_player(&mut self) {
         self.assets.sounds.death.play();
-
+        self.death_time = Some(self.time);
         // self.player.shadow_bonus = true;
         // self.player.score = self.player.score.saturating_sub(DEATH_PENALTY);
         // self.player.velocity = vec2::ZERO;
@@ -363,5 +363,14 @@ impl World {
             / Coord::new(CAMERA_INTERPOLATION)
             * delta_time)
             .map(Coord::as_f32);
+
+        let (time, from, to) = if let Some(time) = self.death_time {
+            (self.time - time, CAMERA_ALIVE_FOV, CAMERA_DEAD_FOV)
+        } else {
+            (self.time, CAMERA_DEAD_FOV, CAMERA_ALIVE_FOV)
+        };
+        let t = time.as_f32().min(1.0);
+        let t = util::smooth_step(t);
+        self.camera.fov = from + (to - from) * t;
     }
 }
