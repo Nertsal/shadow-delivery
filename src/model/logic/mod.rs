@@ -116,7 +116,15 @@ impl World {
                 radius: Coord::new(0.15),
                 color: Rgba::opaque(0.2, 0.8, 0.9),
             });
+
+            if self.hurt_sfx_timeout <= Time::ZERO {
+                let timeout = rng.gen_range(0.1..0.2);
+                self.hurt_sfx_timeout = Time::new(timeout);
+                self.assets.sounds.hurt.play();
+            }
         }
+
+        self.hurt_sfx_timeout -= delta_time;
 
         self.player.health =
             (self.player.health - visibility * Health::new(200.0) * delta_time).max(Health::ZERO);

@@ -17,6 +17,7 @@ pub struct Texture {
 #[derive(geng::Load)]
 pub struct Sounds {
     pub bounce: geng::Sound,
+    pub hurt: geng::Sound,
 }
 
 #[derive(geng::Load)]
