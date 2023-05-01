@@ -160,10 +160,34 @@ impl WorldRender {
             collider: &'a Collider,
             lights: &'a Vec<Spotlight>,
         }
+        let unit_geometry = ugli::VertexBuffer::new_dynamic(self.geng.ugli(), unit_quad());
         for item in query_obstacle_ref!(world.level.obstacles).values() {
             let texture = if item.lights.is_empty() {
-                // House
-                &self.assets.sprites.wall
+                // Building
+                let scale_matrix = mat3::scale(item.collider.size().map(Coord::as_f32) / 2.0);
+                let matrix = mat3::translate(item.collider.pos().map(Coord::as_f32))
+                    * mat3::rotate(item.collider.rotation.as_radians())
+                    * scale_matrix;
+                ugli::draw(
+                    framebuffer,
+                    &self.assets.shaders.building,
+                    ugli::DrawMode::TriangleFan,
+                    &unit_geometry,
+                    (
+                        ugli::uniforms! {
+                            u_scale_matrix: scale_matrix,
+                            u_model_matrix: matrix,
+                            u_outside_color: Rgba::opaque(0.4, 0.3, 0.35),
+                            u_inside_color: Rgba::BLACK,
+                        },
+                        world.camera.uniforms(framebuffer.size().map(|x| x as f32)),
+                    ),
+                    ugli::DrawParameters {
+                        blend_mode: Some(ugli::BlendMode::straight_alpha()),
+                        ..default()
+                    },
+                );
+                continue;
             } else {
                 // Car
                 &self.assets.sprites.car

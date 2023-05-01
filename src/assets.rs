@@ -33,6 +33,7 @@ pub struct Shaders {
     pub visibility: ugli::Program,
     pub background: ugli::Program,
     pub health: ugli::Program,
+    pub building: ugli::Program,
 }
 
 #[derive(geng::Load)]
