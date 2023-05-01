@@ -23,6 +23,9 @@ pub struct Game {
     draw_hitboxes: bool,
     player_visibilty: f32,
     reset: bool,
+    music: geng::SoundEffect,
+    master_volume: f64,
+    music_volume: f64,
 }
 
 impl Game {
@@ -39,6 +42,9 @@ impl Game {
             draw_hitboxes: cfg!(debug_assertions),
             player_visibilty: 0.0,
             reset: false,
+            music: assets.music.play(),
+            master_volume: 1.0,
+            music_volume: 0.7,
         }
     }
 
@@ -89,6 +95,9 @@ impl geng::State for Game {
     }
 
     fn update(&mut self, delta_time: f64) {
+        self.geng.audio().set_volume(self.master_volume);
+        self.music.set_volume(self.music_volume);
+
         if self.reset {
             self.reset();
         }

@@ -4,16 +4,46 @@ use super::*;
 
 impl Game {
     pub fn ui<'a>(&'a mut self, cx: &'a Controller) -> Box<dyn Widget + 'a> {
-        if let Some(time) = self.world.death_time {
+        let framebuffer_size = self.framebuffer_size.map(|x| x as f32);
+        let font = self.geng.default_font();
+        let text_size = 30.0;
+
+        let volume = geng::ui::column![
+            crate::ui::slider(
+                cx,
+                "Master Volume",
+                &mut self.master_volume,
+                0.0..=1.0,
+                font.clone(),
+                text_size,
+            ),
+            crate::ui::slider(
+                cx,
+                "Music Volume",
+                &mut self.music_volume,
+                0.0..=1.0,
+                font.clone(),
+                text_size,
+            )
+        ]
+        .align(vec2(1.0, 0.0))
+        .uniform_padding(f64::from(framebuffer_size.y) * 0.05);
+
+        let mut stack = geng::ui::stack![volume];
+
+        let ui = if let Some(time) = self.world.death_time {
             self.death_ui(time, cx)
         } else {
             self.game_ui(cx)
-        }
+        };
+        stack.push(ui);
+
+        stack.boxed()
     }
 
     fn death_ui<'a>(&'a mut self, death_time: Time, cx: &'a Controller) -> Box<dyn Widget + 'a> {
         let framebuffer_size = self.framebuffer_size.map(|x| x as f32);
-        let font = self.geng.default_font().clone();
+        let font = self.geng.default_font();
         let text_size = 50.0;
         let text_color = Rgba::WHITE;
 
@@ -26,7 +56,7 @@ impl Game {
 
         let time = geng::ui::Text::new(
             format!("Time: {:.0}s", death_time),
-            font,
+            font.clone(),
             text_size,
             text_color,
         );
@@ -50,7 +80,7 @@ impl Game {
 
     fn game_ui<'a>(&mut self, _cx: &'a Controller) -> Box<dyn Widget + 'a> {
         let framebuffer_size = self.framebuffer_size.map(|x| x as f32);
-        let font = self.geng.default_font().clone();
+        let font = self.geng.default_font();
 
         let color = Rgba::lerp(Rgba::GREEN, Rgba::RED, self.player_visibilty);
         let visibility = geng::ui::Text::new(
@@ -82,7 +112,7 @@ impl Game {
 
         let score = geng::ui::Text::new(
             format!("Score: {}", self.world.player.score),
-            font,
+            font.clone(),
             50.0,
             Rgba::WHITE,
         )

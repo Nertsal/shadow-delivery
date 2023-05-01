@@ -5,6 +5,8 @@ pub struct Assets {
     pub shaders: Shaders,
     pub sprites: Sprites,
     pub sounds: Sounds,
+    #[load(postprocess = "looped")]
+    pub music: geng::Sound,
 }
 
 #[derive(Deref)]
@@ -59,6 +61,10 @@ pub struct Props {
     pub road_rd: Texture,
     pub road_dl: Texture,
     pub bricks: Texture,
+}
+
+fn looped(sound: &mut geng::Sound) {
+    sound.set_looped(true);
 }
 
 fn pixel(texture: &mut ugli::Texture) {
