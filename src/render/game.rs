@@ -47,6 +47,9 @@ impl GameRender {
         cache: &RenderCache,
         framebuffer: &mut ugli::Framebuffer,
     ) -> f32 {
+        let framebuffer_size = framebuffer.size().map(|x| x as f32);
+        let unit_geometry = ugli::VertexBuffer::new_dynamic(self.geng.ugli(), unit_quad());
+
         // Lighting
         let (mut world_framebuffer, mut normal_framebuffer) =
             self.lights.start_render(Rgba::BLACK, framebuffer);
@@ -77,6 +80,46 @@ impl GameRender {
             .render_spotlight(&player_light, true, &world.camera, &geometry);
         // Finish
         self.lights.finish(framebuffer);
+
+        // Waypoint arrow
+        {
+            let collider = world.player.collider.raw().map(Coord::as_f32);
+            let size = collider.size();
+            let radius = size.x.max(size.y) * 0.5 * 3.0;
+            let aabb = Aabb2::point(collider.center()).extend_uniform(radius);
+
+            let target = world
+                .level
+                .waypoints
+                .collider
+                .get(world.active_waypoint)
+                .unwrap()
+                .pos()
+                .map(Coord::as_f32);
+            let rotation = (target - collider.center()).arg();
+
+            let matrix = mat3::translate(aabb.center())
+                * mat3::scale(aabb.size() / 2.0)
+                * mat3::rotate(rotation);
+            ugli::draw(
+                framebuffer,
+                &self.assets.shaders.texture,
+                ugli::DrawMode::TriangleFan,
+                &unit_geometry,
+                (
+                    ugli::uniforms! {
+                        u_model_matrix: matrix,
+                        u_texture: &self.assets.sprites.arrow,
+                        u_color: Rgba::new(1.0, 1.0, 1.0, 0.5),
+                    },
+                    world.camera.uniforms(framebuffer_size),
+                ),
+                ugli::DrawParameters {
+                    blend_mode: Some(ugli::BlendMode::straight_alpha()),
+                    ..default()
+                },
+            );
+        }
 
         // Hitboxes
         if draw_hitboxes {
@@ -141,8 +184,6 @@ impl GameRender {
             let visibility = total / total_alpha;
 
             // Render
-            let framebuffer_size = framebuffer.size().map(|x| x as f32);
-            let unit_geometry = ugli::VertexBuffer::new_dynamic(self.geng.ugli(), unit_quad());
 
             // World
             {

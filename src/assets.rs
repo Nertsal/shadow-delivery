@@ -35,6 +35,8 @@ pub struct Sprites {
     pub bike: Texture,
     pub target: Texture,
     pub lamp: Texture,
+    #[load(postprocess = "pixel")]
+    pub arrow: ugli::Texture,
 }
 
 #[derive(geng::Load)]
@@ -46,6 +48,10 @@ pub struct Props {
     pub road_rd: Texture,
     pub road_dl: Texture,
     pub bricks: Texture,
+}
+
+fn pixel(texture: &mut ugli::Texture) {
+    texture.set_filter(ugli::Filter::Nearest);
 }
 
 impl Props {
