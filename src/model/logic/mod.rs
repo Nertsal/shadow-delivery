@@ -173,7 +173,7 @@ impl World {
         }
 
         self.player.collider.rotation +=
-            Angle::new_radians(control.turn.as_f32() * PLAYER_TURN_SPEED * delta_time.as_f32());
+            Angle::new_radians(control.turn * Coord::new(PLAYER_TURN_SPEED) * delta_time);
 
         let mut speed = self.player.velocity.len();
         speed -= speed * Coord::new(1.0 - PLAYER_DRAG) * delta_time;
@@ -181,13 +181,7 @@ impl World {
             speed + control.accelerate * Coord::new(PLAYER_ACCELERATION) * delta_time;
         speed = target_speed.clamp(Coord::ZERO, Coord::new(PLAYER_MAX_SPEED));
 
-        let target_velocity = self
-            .player
-            .collider
-            .rotation
-            .unit_direction()
-            .map(Coord::new)
-            * speed;
+        let target_velocity = self.player.collider.rotation.unit_direction() * speed;
         self.player.velocity += (target_velocity - self.player.velocity)
             .clamp_len(..=Coord::new(PLAYER_ACCELERATION) * delta_time);
     }
@@ -217,15 +211,17 @@ impl World {
                 item.path.next_point += 1;
             }
 
-            let target_angle = Angle::new_radians(delta.arg().as_f32());
-            let max_delta =
-                Angle::new_radians((angular_speed * delta_time).as_f32().clamp_abs(f32::PI));
-            let angle_delta = (target_angle - item.collider.rotation).clamp_abs(max_delta);
+            let target_angle = Angle::new_radians(delta.arg());
+            let max_delta = Angle::new_radians(angular_speed * delta_time);
+            let angle_delta = item
+                .collider
+                .rotation
+                .angle_to(target_angle)
+                .clamp_abs(max_delta);
 
             item.collider.rotation += angle_delta;
-            item.collider.translate(
-                item.collider.rotation.unit_direction().map(Coord::new) * speed * delta_time,
-            );
+            item.collider
+                .translate(item.collider.rotation.unit_direction() * speed * delta_time);
         }
     }
 

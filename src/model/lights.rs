@@ -11,7 +11,7 @@ pub struct GlobalLight {
 #[serde(default)]
 pub struct Spotlight {
     pub position: vec2<Coord>,
-    pub angle: f32,
+    pub angle: Angle<Coord>,
     pub angle_range: f32,
     #[serde(default = "default_gradient")]
     pub angle_gradient: f32,
@@ -40,7 +40,7 @@ impl Default for Spotlight {
     fn default() -> Self {
         Self {
             position: vec2::ZERO,
-            angle: 0.0,
+            angle: Angle::ZERO,
             angle_range: 1.0,
             angle_gradient: 1.0,
             color: Rgba::WHITE,

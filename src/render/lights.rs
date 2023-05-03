@@ -152,8 +152,8 @@ impl LightsRender {
             .chain(lamps)
             .map(|(light, collider)| (light, collider.rotation, collider.pos()));
         for (spotlight, rotation, offset) in spotlights {
-            let position = spotlight.position.rotate(Coord::new(rotation.as_radians())) + offset;
-            let angle = spotlight.angle + rotation.as_radians();
+            let position = spotlight.position.rotate(rotation.as_radians()) + offset;
+            let angle = spotlight.angle + rotation;
             let spotlight = Spotlight {
                 position,
                 angle,
@@ -229,7 +229,7 @@ impl LightsRender {
                 ugli::uniforms! {
                     u_model_matrix: mat3::identity(),
                     u_light_pos: spotlight.position.map(Coord::as_f32),
-                    u_light_angle: spotlight.angle,
+                    u_light_angle: spotlight.angle.normalized_2pi().as_radians().as_f32(),
                     u_light_angle_range: spotlight.angle_range,
                     u_light_angle_gradient: spotlight.angle_gradient,
                     u_light_color: spotlight.color,

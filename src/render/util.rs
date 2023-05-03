@@ -22,7 +22,7 @@ pub fn draw_collider(
     framebuffer: &mut ugli::Framebuffer,
     camera: &Camera2d,
 ) {
-    let rotation = collider.rotation.as_radians();
+    let rotation = collider.rotation.as_radians().as_f32();
     let collider = collider.raw().map(Coord::as_f32);
     let center = collider.center();
     geng.draw2d().draw2d(

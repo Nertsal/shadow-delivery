@@ -46,7 +46,7 @@ impl World {
             .flat_map(|item| {
                 let aabb = item.collider.raw().map(Coord::as_f32);
                 let center = aabb.center();
-                let rotation = item.collider.rotation.as_radians();
+                let rotation = item.collider.rotation.as_radians().as_f32();
                 let vs = aabb
                     .corners()
                     .into_iter()

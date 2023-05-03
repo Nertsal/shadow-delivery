@@ -179,7 +179,7 @@ impl WorldRender {
                 // Building
                 let scale_matrix = mat3::scale(item.collider.size().map(Coord::as_f32) / 2.0);
                 let matrix = mat3::translate(item.collider.pos().map(Coord::as_f32))
-                    * mat3::rotate(item.collider.rotation.as_radians())
+                    * mat3::rotate(item.collider.rotation.as_radians().as_f32())
                     * scale_matrix;
                 ugli::draw(
                     framebuffer,

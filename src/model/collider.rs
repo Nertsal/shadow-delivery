@@ -4,7 +4,7 @@ use super::*;
 #[serde(default)]
 pub struct Collider {
     aabb: Aabb2<Coord>,
-    pub rotation: Angle,
+    pub rotation: Angle<Coord>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -27,7 +27,7 @@ impl Collider {
         let center = self.aabb.center();
         self.aabb
             .corners()
-            .map(|p| (p - center).rotate(Coord::new(self.rotation.as_radians())) + center)
+            .map(|p| (p - center).rotate(self.rotation.as_radians()) + center)
     }
 
     pub fn shape(&self) -> impl parry2d::shape::Shape {
