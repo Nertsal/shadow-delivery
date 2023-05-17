@@ -277,7 +277,7 @@ impl WorldRender {
     pub fn draw_paths(&mut self, world: &World, framebuffer: &mut ugli::Framebuffer) {
         #[derive(StructQuery)]
         struct PathRef<'a> {
-            #[query(component = "Option<Path>")]
+            #[query(optional)]
             path: &'a Path,
         }
         for item in query_path_ref!(world.obstacles).values() {

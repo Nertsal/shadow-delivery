@@ -130,7 +130,7 @@ impl World {
             let position = rng.gen_circle(self.player.collider.pos(), Coord::new(0.1));
             let speed = 1.0;
             let angle = rng.gen_range(0.0..f32::PI * 2.0);
-            let velocity = (Angle::new_radians(angle).unit_direction() * speed).map(Coord::new);
+            let velocity = (Angle::from_radians(angle).unit_vec() * speed).map(Coord::new);
             self.particles.insert(Particle {
                 position,
                 velocity,
@@ -173,7 +173,7 @@ impl World {
         }
 
         self.player.collider.rotation +=
-            Angle::new_radians(control.turn * Coord::new(PLAYER_TURN_SPEED) * delta_time);
+            Angle::from_radians(control.turn * Coord::new(PLAYER_TURN_SPEED) * delta_time);
 
         let mut speed = self.player.velocity.len();
         speed -= speed * Coord::new(1.0 - PLAYER_DRAG) * delta_time;
@@ -181,7 +181,7 @@ impl World {
             speed + control.accelerate * Coord::new(PLAYER_ACCELERATION) * delta_time;
         speed = target_speed.clamp(Coord::ZERO, Coord::new(PLAYER_MAX_SPEED));
 
-        let target_velocity = self.player.collider.rotation.unit_direction() * speed;
+        let target_velocity = self.player.collider.rotation.unit_vec() * speed;
         self.player.velocity += (target_velocity - self.player.velocity)
             .clamp_len(..=Coord::new(PLAYER_ACCELERATION) * delta_time);
     }
@@ -190,7 +190,7 @@ impl World {
         #[derive(StructQuery)]
         struct ObstacleRef<'a> {
             collider: &'a mut Collider,
-            #[query(component = "Option<Path>")]
+            #[query(optional)]
             path: &'a mut Path,
         }
         let mut query = query_obstacle_ref!(self.obstacles);
@@ -211,8 +211,8 @@ impl World {
                 item.path.next_point += 1;
             }
 
-            let target_angle = Angle::new_radians(delta.arg());
-            let max_delta = Angle::new_radians(angular_speed * delta_time);
+            let target_angle = Angle::from_radians(delta.arg());
+            let max_delta = Angle::from_radians(angular_speed * delta_time);
             let angle_delta = item
                 .collider
                 .rotation
@@ -221,7 +221,7 @@ impl World {
 
             item.collider.rotation += angle_delta;
             item.collider
-                .translate(item.collider.rotation.unit_direction() * speed * delta_time);
+                .translate(item.collider.rotation.unit_vec() * speed * delta_time);
         }
     }
 
@@ -306,8 +306,8 @@ impl World {
             player.shadow_bonus = true;
 
             self.assets.sounds.deliver.play();
-            let angle = Angle::new_radians(thread_rng().gen_range(1.47..1.77));
-            let velocity = (angle.unit_direction() * 0.5).map(Coord::new);
+            let angle = Angle::from_radians(thread_rng().gen_range(1.47..1.77));
+            let velocity = (angle.unit_vec() * 0.5).map(Coord::new);
             self.particles.insert(Particle {
                 position: active.collider.pos(),
                 velocity,
